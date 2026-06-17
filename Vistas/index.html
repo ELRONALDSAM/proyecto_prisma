@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Prisma — Primavera 2026</title>
+  <link rel="stylesheet" href="/style.css"/>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="header__logo"><span class="logo-text">PRISMA</span><i class="fas fa-gem logo-gem"></i></div>
+  <nav class="header__nav" id="main-nav">
+    <ul class="nav-list">
+      <li><a href="#inicio">Inicio</a></li><li><a href="#categorias">Colección</a></li>
+      <li><a href="#novedades">Catálogo</a></li><li><a href="#ofertas">Ofertas</a></li>
+      <li><a href="#blog">Blog</a></li><li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </nav>
+  <div class="header__actions">
+    <button class="icon-btn" id="cart-trigger" aria-label="Carrito"><i class="fas fa-shopping-bag"></i><span class="cart-count" id="cart-count">0</span></button>
+    <button class="icon-btn" aria-label="Buscar"><i class="fas fa-search"></i></button>
+    <button class="icon-btn" aria-label="Favoritos"><i class="far fa-heart"></i></button>
+    <div id="user-area">
+      <a href="#" class="btn-login-nav" id="login-trigger">Iniciar Sesión</a>
+      <div class="user-greeting" id="user-greeting" style="display:none">
+        <i class="fas fa-user-circle"></i><span id="user-name-display"></span>
+        <button class="logout-btn" id="logout-btn" title="Cerrar sesión"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="inicio" class="hero">
+  <div class="hero__carousel" id="hero-carousel">
+    <div class="carousel__track" id="carousel-track">
+      <div class="carousel__slide slide--1">
+        <div class="slide__content"><span class="slide__tag">Nueva Temporada</span><h1 class="slide__title">Primavera<br><em>2026</em></h1><p class="slide__sub">Descubre colecciones que redefinen la elegancia contemporánea.</p><a href="#categorias" class="btn btn-primary">Explorar Colección</a></div>
+        <div class="slide__visual"><img src="imagen/banner-carrusel.png" alt="Nueva Colección 2026"/></div>
+      </div>
+      <div class="carousel__slide slide--2">
+        <div class="slide__content"><span class="slide__tag">Tendencias</span><h1 class="slide__title">Verano<br><em>Vibrante</em></h1><p class="slide__sub">Los colores de la temporada que no puedes ignorar.</p><a href="#novedades" class="btn btn-primary">Ver Catálogo</a></div>
+        <div class="slide__visual"><img src="imagen/tendencias de verano.png" alt="Tendencias de Verano"/></div>
+      </div>
+      <div class="carousel__slide slide--3">
+        <div class="slide__content"><span class="slide__tag">Accesorios</span><h1 class="slide__title">El Detalle<br><em>Lo Es Todo</em></h1><p class="slide__sub">Complementa cualquier look con nuestra colección de accesorios.</p><a href="#ofertas" class="btn btn-primary">Ver Ofertas</a></div>
+        <div class="slide__visual"><img src="imagen/accesorios-para-todos.png" alt="Accesorios para Todos"/></div>
+      </div>
+    </div>
+  </div>
+  <div class="carousel__controls">
+    <button class="carousel-btn" id="prev-btn"><i class="fas fa-chevron-left"></i></button>
+    <div class="carousel__dots" id="carousel-dots"></div>
+    <button class="carousel-btn" id="next-btn"><i class="fas fa-chevron-right"></i></button>
+  </div>
+</section>
+
+<!-- CATEGORÍAS -->
+<section id="categorias" class="section categorias">
+  <div class="section__header"><span class="section__tag">Nueva Colección</span><h2 class="section__title">Categorías</h2><p class="section__desc">Encuentra la moda ideal para todos: Hombre, Mujer y Niño.</p></div>
+  <div class="categories-grid">
+    <div class="cat-card" data-category="hombre"><div class="cat-card__img-wrap"><img src="imagen/hombre.png" alt="Hombre"/><div class="cat-card__overlay"></div></div><div class="cat-card__info"><h3>Hombre</h3><p>Estilo moderno y actual.</p><a href="#" class="btn btn-ghost">Ver colección</a></div></div>
+    <div class="cat-card cat-card--featured" data-category="mujer"><div class="cat-card__img-wrap"><img src="imagen/mujer .png" alt="Mujer"/><div class="cat-card__overlay"></div></div><div class="cat-card__info"><h3>Mujer</h3><p>Elegancia, frescura y tendencia.</p><a href="#" class="btn btn-ghost">Ver colección</a></div></div>
+    <div class="cat-card" data-category="nino"><div class="cat-card__img-wrap"><img src="imagen/niño.png" alt="Niño"/><div class="cat-card__overlay"></div></div><div class="cat-card__info"><h3>Niño</h3><p>Moda divertida y cómoda.</p><a href="#" class="btn btn-ghost">Ver colección</a></div></div>
+    <div class="cat-card" data-category="accesorios"><div class="cat-card__img-wrap"><img src="imagen/asesorios.png.png" alt="Accesorios"/><div class="cat-card__overlay"></div></div><div class="cat-card__info"><h3>Accesorios</h3><p>Complementa tu look.</p><a href="#" class="btn btn-ghost">Ver colección</a></div></div>
+  </div>
+</section>
+
+<!-- CATÁLOGO -->
+<section id="novedades" class="section novedades">
+  <div class="section__header"><span class="section__tag">Catálogo</span><h2 class="section__title">Nuevos Productos</h2><p class="section__desc">Conocé las últimas incorporaciones de nuestra colección.</p></div>
+  <div class="category-filters" id="catalog-filters">
+    <button class="cat-filter-btn active" data-filter="all">Todos</button>
+    <button class="cat-filter-btn" data-filter="mujer"><i class="fas fa-female"></i> Mujer</button>
+    <button class="cat-filter-btn" data-filter="hombre"><i class="fas fa-male"></i> Hombre</button>
+    <button class="cat-filter-btn" data-filter="nino"><i class="fas fa-child"></i> Niños</button>
+    <button class="cat-filter-btn" data-filter="accesorios"><i class="fas fa-gem"></i> Accesorios</button>
+  </div>
+  <div class="products-grid" id="products-grid">
+    <div class="product-card" data-name="Vestido de Gala Seda" data-price="3679.15" data-img="imagen/vestido-gala-seda .png" data-desc="Vestido de gala en seda natural, corte evasé, cierre lateral invisible. Tallas S–XL." data-category="mujer">
+      <div class="product-card__img-wrap"><img src="imagen/vestido-gala-seda .png" alt="Vestido de Gala"/><button class="product-card__wishlist" aria-label="Favorito"><i class="far fa-heart"></i></button><button class="product-card__quick" data-action="quick-view">Vista rápida</button></div>
+      <div class="product-card__info"><h3>Vestido de Gala Seda</h3><p class="product-card__price">C$ 3,679.15</p><button class="btn btn-primary btn-sm btn-add-cart">Añadir al carrito</button></div>
+    </div>
+    <div class="product-card" data-name="Traje Lino Italiano" data-price="8800.00" data-img="imagen/traje_hombre.png" data-desc="Traje de lino italiano corte slim, forro de seda, botones nácar. Perfecto para el verano." data-category="hombre">
+      <div class="product-card__img-wrap"><img src="imagen/traje_hombre.png" alt="Traje de Hombre"/><button class="product-card__wishlist" aria-label="Favorito"><i class="far fa-heart"></i></button><button class="product-card__quick" data-action="quick-view">Vista rápida</button></div>
+      <div class="product-card__info"><h3>Traje Lino Italiano</h3><p class="product-card__price">C$ 8,800.00</p><button class="btn btn-primary btn-sm btn-add-cart">Añadir al carrito</button></div>
+    </div>
+    <div class="product-card" data-name="Conjunto Niño Premium" data-price="3200.00" data-img="imagen/conjunto-niño.png" data-desc="Conjunto algodón orgánico, camisa + pantalón chino. Cómodo y elegante." data-category="nino">
+      <div class="product-card__img-wrap"><img src="imagen/conjunto-niño.png" alt="Conjunto Niño"/><button class="product-card__wishlist" aria-label="Favorito"><i class="far fa-heart"></i></button><button class="product-card__quick" data-action="quick-view">Vista rápida</button></div>
+      <div class="product-card__info"><h3>Conjunto Niño Premium</h3><p class="product-card__price">C$ 3,200.00</p><button class="btn btn-primary btn-sm btn-add-cart">Añadir al carrito</button></div>
+    </div>
+    <div class="product-card" data-name="Falda Plisada Larga" data-price="2800.00" data-img="imagen/falda-elegante.png" data-desc="Falda plisada en gasa de poliéster reciclado. Fluida y versátil, día y noche." data-category="mujer">
+      <div class="product-card__img-wrap"><img src="imagen/falda-elegante.png" alt="Falda Plisada"/><button class="product-card__wishlist" aria-label="Favorito"><i class="far fa-heart"></i></button><button class="product-card__quick" data-action="quick-view">Vista rápida</button></div>
+      <div class="product-card__info"><h3>Falda Plisada Larga</h3><p class="product-card__price">C$ 2,800.00</p><button class="btn btn-primary btn-sm btn-add-cart">Añadir al carrito</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- OFERTAS -->
+<section id="ofertas" class="section ofertas">
+  <div class="section__header"><span class="section__tag">Temporada</span><h2 class="section__title">Ofertas Especiales</h2><p class="section__desc">Grandes descuentos en prendas para Hombre, Mujer y Niño.</p></div>
+
+  <div class="offers-block"><h3 class="offers-block__title"><span>Mujer</span></h3><div class="offers-grid">
+    <div class="offer-card" data-name="Vestido Midi Floral" data-price="2660.00" data-img="imagen/Vestido Midi Floral.png" data-desc="Vestido midi floral, manga corta, escote redondo. Pieza imprescindible de la temporada."><div class="offer-card__badge">-30%</div><div class="offer-card__img-wrap"><img src="imagen/Vestido Midi Floral.png" alt="Vestido Floral"/></div><div class="offer-card__info"><h4>Vestido Midi Floral</h4><div class="offer-card__prices"><span class="price-original">C$ 3,800.00</span><span class="price-offer">C$ 2,660.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+    <div class="offer-card" data-name="Blusa de Seda Estampada" data-price="1875.00" data-img="imagen/blusa de seda.png" data-desc="Blusa en seda estampada, cierre de botones en la espalda. Fresca y sofisticada."><div class="offer-card__badge">-25%</div><div class="offer-card__img-wrap"><img src="imagen/blusa de seda.png" alt="Blusa Seda"/></div><div class="offer-card__info"><h4>Blusa de Seda Estampada</h4><div class="offer-card__prices"><span class="price-original">C$ 2,500.00</span><span class="price-offer">C$ 1,875.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+    <div class="offer-card" data-name="Accesorios Mujer" data-price="1520.00" data-img="imagen/asesorios de mujer .png" data-desc="Set: bolso clutch + collar artesanal. Complemento perfecto para cualquier outfit."><div class="offer-card__badge">-20%</div><div class="offer-card__img-wrap"><img src="imagen/asesorios de mujer .png" alt="Accesorios Mujer"/></div><div class="offer-card__info"><h4>Accesorios</h4><div class="offer-card__prices"><span class="price-original">C$ 1,900.00</span><span class="price-offer">C$ 1,520.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+  </div></div>
+
+  <div class="offers-block"><h3 class="offers-block__title"><span>Hombre</span></h3><div class="offers-grid">
+    <div class="offer-card" data-name="Camisa Casual de Rayas" data-price="1520.00" data-img="imagen/camisa-casual-hombre.png" data-desc="Camisa de algodón con rayas verticales, corte regular, perfecta para el día a día."><div class="offer-card__badge">-20%</div><div class="offer-card__img-wrap"><img src="imagen/camisa-casual-hombre.png" alt="Camisa Hombre"/></div><div class="offer-card__info"><h4>Camisa Casual de Rayas</h4><div class="offer-card__prices"><span class="price-original">C$ 1,900.00</span><span class="price-offer">C$ 1,520.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+    <div class="offer-card" data-name="Pantalón Chino Verde Claro" data-price="2040.00" data-img="imagen/pantalon-verde-hombres.png" data-desc="Pantalón chino en gabardina stretch, color verde salvia. Cómodo y elegante."><div class="offer-card__badge">-15%</div><div class="offer-card__img-wrap"><img src="imagen/pantalon-verde-hombres.png" alt="Pantalón Chino"/></div><div class="offer-card__info"><h4>Pantalón Chino Verde</h4><div class="offer-card__prices"><span class="price-original">C$ 2,400.00</span><span class="price-offer">C$ 2,040.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+    <div class="offer-card" data-name="Accesorios Hombre" data-price="715.00" data-img="imagen/accesorio de hombre.png" data-desc="Kit: cinturón de cuero + pañuelo de bolsillo. Detalles que hacen la diferencia."><div class="offer-card__badge">-35%</div><div class="offer-card__img-wrap"><img src="imagen/accesorio de hombre.png" alt="Accesorios Hombre"/></div><div class="offer-card__info"><h4>Accesorios</h4><div class="offer-card__prices"><span class="price-original">C$ 1,100.00</span><span class="price-offer">C$ 715.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+  </div></div>
+
+  <div class="offers-block"><h3 class="offers-block__title"><span>Niño</span></h3><div class="offers-grid">
+    <div class="offer-card" data-name="Camisa Casual Niño" data-price="2660.00" data-img="imagen/camisa casual de niño.png" data-desc="Camisa de algodón para niño, cómoda y fresca para el día a día."><div class="offer-card__badge">-30%</div><div class="offer-card__img-wrap"><img src="imagen/camisa casual de niño.png" alt="Camisa Niño"/></div><div class="offer-card__info"><h4>Camisa Casual</h4><div class="offer-card__prices"><span class="price-original">C$ 3,800.00</span><span class="price-offer">C$ 2,660.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+    <div class="offer-card" data-name="Short Casual Niño" data-price="1875.00" data-img="imagen/short casual de niño .png" data-desc="Short algodón jersey, elástico en cintura, bolsillos laterales. Perfecto para el juego."><div class="offer-card__badge">-25%</div><div class="offer-card__img-wrap"><img src="imagen/short casual de niño .png" alt="Short Niño"/></div><div class="offer-card__info"><h4>Short Casual</h4><div class="offer-card__prices"><span class="price-original">C$ 2,500.00</span><span class="price-offer">C$ 1,875.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+    <div class="offer-card" data-name="Accesorios Niño" data-price="1520.00" data-img="imagen/accesorio de niño .png" data-desc="Set: mochila mini + gorra de temporada. Funcional y divertido."><div class="offer-card__badge">-20%</div><div class="offer-card__img-wrap"><img src="imagen/accesorio de niño .png" alt="Accesorios Niño"/></div><div class="offer-card__info"><h4>Accesorios</h4><div class="offer-card__prices"><span class="price-original">C$ 1,900.00</span><span class="price-offer">C$ 1,520.00</span></div><button class="btn btn-primary btn-sm btn-add-cart">Agregar</button></div></div>
+  </div></div>
+  <div class="section__cta"><a href="#novedades" class="btn btn-primary">Ver Catálogo Completo</a></div>
+</section>
+
+<!-- BLOG -->
+<section id="blog" class="section blog">
+  <div class="section__header"><span class="section__tag">Inspiración</span><h2 class="section__title">Blog & Tendencias</h2><p class="section__desc">Consejos de moda, tendencias y cómo crear el atuendo perfecto.</p></div>
+  <div class="blog-grid">
+    <article class="blog-card blog-card--featured"><div class="blog-card__img-wrap"><img src="imagen/vestido_de_gala_rojo_con_corset_mujer.png" alt="Vestido de Gala Rojo"/><span class="blog-card__category">Tendencias</span></div><div class="blog-card__body"><time class="blog-card__date">29 AGO · Prisma</time><h3>Vestido de Gala Rojo con Corset: Elegancia y Glamour</h3><p>Ideas para lucir radiante en tu próximo evento especial con un look vanguardista.</p><a href="#" class="btn-text">Leer artículo <i class="fas fa-arrow-right"></i></a></div></article>
+    <article class="blog-card"><div class="blog-card__img-wrap"><img src="imagen/traje elegante de hombre .png" alt="Traje elegante"/><span class="blog-card__category">Hombre</span></div><div class="blog-card__body"><time class="blog-card__date">30 OCT · Prisma</time><h3>Traje Elegante: Frescura y Elegancia en Una Sola Prenda</h3><p>Cómo combinar el traje de primavera con accesorios modernos.</p><a href="#" class="btn-text">Leer artículo <i class="fas fa-arrow-right"></i></a></div></article>
+    <article class="blog-card"><div class="blog-card__img-wrap"><img src="imagen/traje elegante de niño.png" alt="Traje niño"/><span class="blog-card__category">Niño</span></div><div class="blog-card__body"><time class="blog-card__date">29 AGO · Prisma</time><h3>El Toque Final que Transforma el Estilo Infantil</h3><p>Los accesorios tienen el poder de elevar cualquier outfit infantil.</p><a href="#" class="btn-text">Leer artículo <i class="fas fa-arrow-right"></i></a></div></article>
+  </div>
+  <div class="section__cta"><a href="#" class="btn btn-outline">Ver Archivo Completo</a></div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="section contacto">
+  <div class="contacto__grid">
+    <div class="contacto__info">
+      <span class="section__tag">Encuéntranos</span><h2 class="section__title">Contacto</h2><p>Estamos en Managua, Nicaragua. Escríbenos o visítanos.</p>
+      <ul class="contact-list">
+        <li><i class="fas fa-map-marker-alt"></i><span>Frente a la estación 5 de la policía, parada del centro comercial, Managua</span></li>
+        <li><i class="fas fa-phone"></i><span>+505 8888 9999</span></li>
+        <li><i class="fas fa-envelope"></i><span>contacto@prisma.com.ni</span></li>
+      </ul>
+      <div class="social-row">
+        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-link" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+    <div class="contacto__form-wrap">
+      <form class="contact-form" id="contact-form" novalidate>
+        <div class="form-group"><label for="contact-name">Nombre</label><input type="text" id="contact-name" placeholder="Tu nombre completo" required/></div>
+        <div class="form-group"><label for="contact-email">Email</label><input type="email" id="contact-email" placeholder="tucorreo@ejemplo.com" required/></div>
+        <div class="form-group"><label for="contact-msg">Mensaje</label><textarea id="contact-msg" placeholder="¿En qué podemos ayudarte?" rows="5" required></textarea></div>
+        <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand"><span class="logo-text">PRISMA</span><i class="fas fa-gem logo-gem"></i><p>Moda contemporánea para toda la familia. Managua, Nicaragua.</p></div>
+    <div class="footer__links"><h4>Navegación</h4><ul><li><a href="#inicio">Inicio</a></li><li><a href="#categorias">Colección</a></li><li><a href="#ofertas">Ofertas</a></li><li><a href="#blog">Blog</a></li></ul></div>
+    <div class="footer__links"><h4>Ayuda</h4><ul><li><a href="#contacto">Contacto</a></li><li><a href="#">Política de cambios</a></li><li><a href="#">Envíos</a></li><li><a href="#">Privacidad</a></li></ul></div>
+  </div>
+  <div class="footer__bottom"><p>© 2026 Prisma Tienda de Ropa · Todos los derechos reservados.</p></div>
+</footer>
+
+<!-- ══════════════════════════════════
+     MODAL LOGIN
+══════════════════════════════════ -->
+<div id="login-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+    <div class="modal__header">
+      <h3>Iniciar Sesión</h3>
+      <p>Bienvenido de vuelta a Prisma</p>
+    </div>
+    <form class="modal-form" id="login-form" novalidate>
+      <div class="form-group">
+        <label for="fullname">Nombre completo</label>
+        <input type="text" id="fullname" placeholder="Tu nombre" required/>
+      </div>
+      <div class="form-group">
+        <label for="username">Usuario o correo</label>
+        <input type="text" id="username" placeholder="Tu usuario o email" required/>
+      </div>
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="password-field">
+          <input type="password" id="password" placeholder="Mínimo 8 caracteres" required/>
+          <button type="button" class="toggle-password-btn" data-target="password" aria-label="Mostrar contraseña"><i class="far fa-eye"></i></button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Ingresar</button>
+      <div class="login-options">
+        <label class="checkbox-label"><input type="checkbox" id="remember"/><span>Recuérdame</span></label>
+        <a href="#" class="link-subtle">¿Olvidaste tu contraseña?</a>
+      </div>
+    </form>
+    <div class="modal__footer">
+      <p>Usuarios de prueba: <strong>admin / admin123</strong> &nbsp;·&nbsp; <strong>prisma / prisma2026</strong></p>
+      <a href="#" class="btn btn-outline btn-full" id="open-register-btn">Crear una cuenta</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL REGISTRO
+══════════════════════════════════ -->
+<div id="register-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+    <div class="modal__header">
+      <h3>Crear una Cuenta</h3>
+      <p>Únete a Prisma y descubre lo mejor en moda</p>
+    </div>
+    <form class="modal-form" id="register-form" novalidate>
+      <div class="form-group">
+        <label for="reg-fullname">Nombre completo</label>
+        <input type="text" id="reg-fullname" placeholder="Tu nombre completo" required/>
+      </div>
+      <div class="form-group">
+        <label for="reg-email">Correo electrónico</label>
+        <input type="email" id="reg-email" placeholder="tucorreo@ejemplo.com" required/>
+      </div>
+      <div class="form-group">
+        <label for="reg-username">Nombre de usuario</label>
+        <input type="text" id="reg-username" placeholder="Elige un nombre de usuario" required/>
+      </div>
+      <div class="form-group">
+        <label for="reg-password">Contraseña</label>
+        <div class="password-field">
+          <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres, 1 mayúscula y 1 número" required/>
+          <button type="button" class="toggle-password-btn" data-target="reg-password" aria-label="Mostrar contraseña"><i class="far fa-eye"></i></button>
+        </div>
+        <div class="password-strength" id="password-strength-bar"><span></span></div>
+        <p class="password-hint">Debe tener al menos 8 caracteres, una mayúscula y un número.</p>
+      </div>
+      <div class="form-group">
+        <label for="reg-password2">Confirmar contraseña</label>
+        <div class="password-field">
+          <input type="password" id="reg-password2" placeholder="Repite tu contraseña" required/>
+          <button type="button" class="toggle-password-btn" data-target="reg-password2" aria-label="Mostrar contraseña"><i class="far fa-eye"></i></button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Crear Cuenta</button>
+    </form>
+    <div class="modal__footer">
+      <p>¿Ya tienes una cuenta? <a href="#" class="link-subtle" id="back-to-login">Inicia sesión aquí</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div id="product-detail-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box modal__box--product">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+    <div class="product-detail__grid">
+      <div class="product-detail__img-wrap">
+        <img id="detail-img" src="" alt=""/>
+        <span class="detail-badge" id="detail-badge" style="display:none"></span>
+      </div>
+      <div class="product-detail__info">
+        <div class="detail-top">
+          <div><span class="detail-category" id="detail-category"></span><h3 id="detail-name"></h3></div>
+          <button class="detail-wish-btn" id="detail-wish-btn" aria-label="Me gusta"><i class="far fa-heart"></i></button>
+        </div>
+        <p class="product-detail__price" id="detail-price"></p>
+        <div class="detail-rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i><span>4.5 · 128 reseñas</span></div>
+        <p id="detail-desc" class="product-detail__desc"></p>
+        <div class="detail-sizes">
+          <p class="detail-sizes__label">Selecciona tu talla</p>
+          <div class="detail-sizes__grid" id="detail-sizes-grid">
+            <button class="size-btn" data-size="XS">XS</button>
+            <button class="size-btn" data-size="S">S</button>
+            <button class="size-btn active" data-size="M">M</button>
+            <button class="size-btn" data-size="L">L</button>
+            <button class="size-btn" data-size="XL">XL</button>
+          </div>
+        </div>
+        <div class="detail-qty">
+          <p class="detail-sizes__label">Cantidad</p>
+          <div class="qty-control">
+            <button class="qty-btn" id="qty-minus"><i class="fas fa-minus"></i></button>
+            <span id="qty-value">1</span>
+            <button class="qty-btn" id="qty-plus"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button id="add-to-cart-detail-btn" class="btn btn-primary btn-full"><i class="fas fa-shopping-bag"></i> Añadir al Carrito</button>
+          <button class="btn btn-outline btn-full" data-close-modal>Seguir viendo</button>
+        </div>
+        <div class="detail-meta">
+          <span><i class="fas fa-truck"></i> Envío gratis +C$2,000</span>
+          <span><i class="fas fa-undo"></i> Cambios en 30 días</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CARRITO -->
+<div id="cart-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box modal__box--cart">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+    <div class="modal__header"><h3>Carrito de Compras</h3></div>
+    <div id="cart-items-container" class="cart-items"></div>
+    <div class="cart-summary">
+      <div class="cart-summary__line"><span>Subtotal</span><span id="cart-subtotal">C$ 0.00</span></div>
+      <div class="cart-summary__line cart-summary__line--total"><span>Total a Pagar</span><span id="cart-final-total">C$ 0.00</span></div>
+    </div>
+    <div class="cart-actions">
+      <button id="checkout-button" class="btn btn-primary btn-full" disabled>Ir a Pagar</button>
+      <button class="btn btn-outline btn-full" data-close-modal>Seguir Comprando</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MODAL DATOS DE ENVÍO (NUEVO — paso 1 del checkout)
+══════════════════════════════════ -->
+<div id="shipping-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box modal__box--shipping">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+
+    <!-- Indicador de pasos -->
+    <div class="checkout-steps">
+      <div class="checkout-step active" data-step="1">
+        <span class="step-num">1</span>
+        <span class="step-label">Datos de Envío</span>
+      </div>
+      <div class="checkout-step-line"></div>
+      <div class="checkout-step" data-step="2">
+        <span class="step-num">2</span>
+        <span class="step-label">Pago</span>
+      </div>
+    </div>
+
+    <div class="modal__header">
+      <h3><i class="fas fa-map-marker-alt" style="color:var(--coral);margin-right:8px"></i>Datos de Envío</h3>
+      <p>Ingresa dónde quieres recibir tu pedido</p>
+    </div>
+
+    <!-- Aviso si ya hay datos guardados -->
+    <div id="saved-address-notice" class="saved-address-notice" style="display:none">
+      <i class="fas fa-check-circle"></i>
+      <div>
+        <strong>Usamos tu dirección guardada</strong>
+        <span id="saved-address-preview"></span>
+      </div>
+      <button type="button" class="btn-change-address" id="btn-change-address">Cambiar</button>
+    </div>
+
+    <form class="modal-form" id="shipping-form" novalidate>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="ship-name">Nombre completo <span class="required-star">*</span></label>
+          <input type="text" id="ship-name" placeholder="Nombre de quien recibe" required/>
+          <span class="field-error-msg" id="ship-name-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="ship-phone">Teléfono <span class="required-star">*</span></label>
+          <input type="tel" id="ship-phone" placeholder="+505 8888 0000" required/>
+          <span class="field-error-msg" id="ship-phone-error"></span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ship-email">Correo electrónico <span class="required-star">*</span></label>
+        <input type="email" id="ship-email" placeholder="Para confirmación del pedido" required/>
+        <span class="field-error-msg" id="ship-email-error"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="ship-address">Dirección <span class="required-star">*</span></label>
+        <input type="text" id="ship-address" placeholder="Calle, número, barrio o referencia" required/>
+        <span class="field-error-msg" id="ship-address-error"></span>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="ship-city">Ciudad / Municipio <span class="required-star">*</span></label>
+          <input type="text" id="ship-city" placeholder="Ej: Managua" required/>
+          <span class="field-error-msg" id="ship-city-error"></span>
+        </div>
+        <div class="form-group">
+          <label for="ship-dept">Departamento</label>
+          <select id="ship-dept" class="select-styled">
+            <option value="">Seleccionar…</option>
+            <option>Managua</option><option>Granada</option><option>León</option>
+            <option>Masaya</option><option>Chinandega</option><option>Rivas</option>
+            <option>Matagalpa</option><option>Estelí</option><option>Jinotega</option>
+            <option>Carazo</option><option>Chontales</option><option>Boaco</option>
+            <option>Nueva Segovia</option><option>Madriz</option><option>Río San Juan</option>
+            <option>RACN</option><option>RACS</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="ship-notes">Indicaciones adicionales</label>
+        <textarea id="ship-notes" placeholder="Ej: Portón azul, casa esquinera, llamar al llegar…" rows="2"></textarea>
+      </div>
+
+      <!-- Guardar datos -->
+      <label class="checkbox-label save-address-check">
+        <input type="checkbox" id="save-shipping-data" checked/>
+        <span><i class="fas fa-save" style="color:var(--sage);margin-right:4px"></i>Guardar estos datos para futuras compras</span>
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-full" id="shipping-continue-btn">
+        Continuar al Pago <i class="fas fa-arrow-right"></i>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL CHECKOUT (pago — paso 2) -->
+<div id="checkout-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box modal__box--checkout">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+
+    <!-- Indicador de pasos -->
+    <div class="checkout-steps">
+      <div class="checkout-step completed" data-step="1">
+        <span class="step-num"><i class="fas fa-check"></i></span>
+        <span class="step-label">Datos de Envío</span>
+      </div>
+      <div class="checkout-step-line completed"></div>
+      <div class="checkout-step active" data-step="2">
+        <span class="step-num">2</span>
+        <span class="step-label">Pago</span>
+      </div>
+    </div>
+
+    <!-- Resumen de dirección guardada -->
+    <div id="checkout-shipping-summary" class="checkout-shipping-summary">
+      <div class="css-icon"><i class="fas fa-truck"></i></div>
+      <div class="css-info">
+        <span class="css-label">Envío a:</span>
+        <span id="css-name-phone"></span>
+        <span id="css-address-line"></span>
+      </div>
+      <button class="btn-text btn-sm" id="btn-edit-shipping" style="flex-shrink:0">
+        <i class="fas fa-pen"></i> Editar
+      </button>
+    </div>
+
+    <div class="checkout-grid">
+      <div class="checkout-payment">
+        <h3>Método de Pago</h3>
+        <div class="payment-tabs">
+          <button class="payment-tab active" data-tab="card"><i class="fas fa-credit-card"></i> Tarjeta</button>
+          <button class="payment-tab" data-tab="paypal"><i class="fab fa-paypal"></i> PayPal</button>
+          <button class="payment-tab" data-tab="transfer"><i class="fas fa-university"></i> Transferencia</button>
+        </div>
+        <div class="payment-panel active" id="tab-card">
+          <div class="form-group"><label for="card-name">Nombre en la Tarjeta</label><input type="text" id="card-name" placeholder="Nombre completo"/><span class="field-error-msg" id="card-name-error"></span></div>
+          <div class="form-group"><label for="card-number">Número de Tarjeta</label><input type="text" id="card-number" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" inputmode="numeric"/><span class="field-error-msg" id="card-number-error"></span></div>
+          <div class="form-row-2">
+            <div class="form-group"><label for="expiry-date">Vencimiento</label><input type="text" id="expiry-date" placeholder="MM/AA" maxlength="5" inputmode="numeric"/><span class="field-error-msg" id="expiry-date-error"></span></div>
+            <div class="form-group"><label for="cvv">CVV</label><input type="text" id="cvv" placeholder="123" maxlength="4" inputmode="numeric"/><span class="field-error-msg" id="cvv-error"></span></div>
+          </div>
+        </div>
+        <div class="payment-panel" id="tab-paypal"><div class="payment-info-box"><i class="fab fa-paypal fa-3x"></i><p>Serás redirigido a PayPal para completar el pago de forma segura.</p></div></div>
+        <div class="payment-panel" id="tab-transfer"><div class="payment-info-box"><i class="fas fa-university fa-3x"></i><p>Banco: BanPro · Cuenta: 1234-5678-90 · Titular: Prisma S.A.<br/>Envía el comprobante a <strong>pagos@prisma.com.ni</strong></p></div></div>
+      </div>
+      <div class="checkout-summary">
+        <h3>Resumen del Pedido</h3>
+        <div id="checkout-items" class="checkout-items-list"></div>
+        <div class="checkout-totals">
+          <div class="checkout-total-line"><span>Subtotal</span><span id="subtotal-amount">C$ 0.00</span></div>
+          <div class="checkout-total-line"><span>Envío</span><span id="shipping-cost">C$ 80.00</span></div>
+          <hr/>
+          <div class="checkout-total-line checkout-total-line--final"><span>Total</span><span id="final-total-amount">C$ 0.00</span></div>
+        </div>
+        <button id="pay-now-btn" class="btn btn-primary btn-full" disabled><i class="fas fa-lock"></i> Confirmar y Pagar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PEDIDO CONFIRMADO -->
+<div id="order-success-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box modal__box--success">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+    <div class="order-success-content">
+      <div class="success-icon-wrap">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3>¡Pedido Confirmado!</h3>
+      <p>Tu compra fue procesada exitosamente. Recibirás una confirmación en tu correo.</p>
+      <div class="order-success-address" id="order-success-address"></div>
+      <div class="order-success-total" id="order-success-total"></div>
+      <button class="btn btn-primary btn-full" data-close-modal style="margin-top:8px">Seguir Comprando</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+<script src="/script.js"></script>
+
+</body>
+</html>

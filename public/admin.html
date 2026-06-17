@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prisma — Panel Administrador</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="admin.css"/>
+  <style>.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar__brand">
+    <span class="logo-text">PRISMA</span> <i class="fas fa-gem logo-gem"></i> <span class="admin-tag">Admin</span>
+  </div>
+  <nav class="sidebar__nav">
+    <p class="nav-section-label">Principal</p>
+    <div class="nav-item active" data-page="dashboard" role="button" tabindex="0"><i class="fas fa-chart-pie"></i> Dashboard</div>
+    <div class="nav-item" data-page="productos" role="button" tabindex="0"><i class="fas fa-tshirt"></i> Productos <span class="badge-count" id="total-badge">0</span></div>
+    <div class="nav-item" data-page="categorias" role="button" tabindex="0"><i class="fas fa-tags"></i> Categorías</div>
+    
+    <p class="nav-section-label">Tienda</p>
+    <div class="nav-item" data-page="ofertas" role="button" tabindex="0"><i class="fas fa-percentage"></i> Ofertas</div>
+    <div class="nav-item" data-page="inventario" role="button" tabindex="0"><i class="fas fa-boxes"></i> Inventario</div>
+    
+    <p class="nav-section-label">Sistema</p>
+    <div class="nav-item" id="btn-go-home" role="button" tabindex="0"><i class="fas fa-store"></i> Ver Tienda</div>
+  </nav>
+  <div class="sidebar__footer">
+    <strong>Administrador</strong> Prisma · Managua, NI<br/>
+    <button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+  </div>
+</aside>
+
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<div class="main" id="main-content">
+  <header class="topbar">
+    <div class="topbar__left">
+      <button class="hamburger-admin" id="hamburger-admin"><i class="fas fa-bars"></i></button>
+      <h1 class="topbar__title" id="page-title">Dashboard</h1>
+    </div>
+    <div class="topbar__actions">
+      <button class="btn-ghost" id="btn-new-product"><i class="fas fa-plus"></i> Nuevo producto</button>
+    </div>
+  </header>
+
+  <main class="content" id="content">
+    <section class="page active" id="page-dashboard">
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="recent-grid">
+        <div class="panel">
+          <div class="panel__header"><h4><i class="fas fa-tshirt" style="margin-right:8px;color:var(--coral)"></i>Últimos productos</h4><a href="#" onclick="navTo('productos');return false;">Ver todos</a></div>
+          <div id="recent-products-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel__header"><h4><i class="fas fa-history" style="margin-right:8px;color:var(--sage)"></i>Actividad reciente</h4></div>
+          <div id="activity-log"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-productos">
+      <div class="table-wrap">
+        <div class="table-toolbar">
+          <div class="table-toolbar__left">
+            <div class="search-box"><i class="fas fa-search"></i><input type="search" id="prod-search" placeholder="Buscar producto..."/></div>
+            <select class="filter-select" id="cat-filter"><option value="">Todas las categorías</option><option value="mujer">Mujer</option><option value="hombre">Hombre</option><option value="nino">Niño</option><option value="accesorios">Accesorios</option></select>
+            <select class="filter-select" id="status-filter"><option value="">Todos los estados</option><option value="activo">Activo</option><option value="inactivo">Inactivo</option></select>
+          </div>
+          <button class="btn-primary" id="btn-new-product-table" onclick="openModal('add')"><i class="fas fa-plus"></i> Agregar</button>
+        </div>
+        <div class="table-overflow">
+          <table id="products-table">
+            <thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Descuento</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody id="products-tbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span class="table-footer__info" id="table-info">0 productos</span><nav class="pagination" id="pagination"></nav></div>
+      </div>
+    </section>
+
+    <section class="page" id="page-categorias">
+      <div class="stats-grid" id="cat-stats"></div>
+      <div class="table-wrap" style="margin-top:24px">
+        <div class="table-toolbar"><h2 class="table-toolbar__title">Resumen por categoría</h2></div>
+        <table id="cat-table">
+          <thead><tr><th>Categoría</th><th>Productos</th><th>Precio promedio</th><th>Precio máx.</th><th>Precio mín.</th></tr></thead>
+          <tbody id="cat-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="page" id="page-ofertas">
+      <div class="table-wrap">
+        <div class="table-toolbar"><h2 class="table-toolbar__title">Productos con descuento activo</h2><button class="btn-primary" onclick="openModal('add')"><i class="fas fa-plus"></i> Agregar oferta</button></div>
+        <div class="table-overflow">
+          <table>
+            <thead><tr><th>Producto</th><th>Precio original</th><th>Descuento</th><th>Precio final</th><th>Acciones</th></tr></thead>
+            <tbody id="offers-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-inventario">
+      <div class="table-wrap">
+        <div class="table-toolbar"><h2 class="table-toolbar__title">Estado del inventario</h2></div>
+        <div class="table-overflow">
+          <table>
+            <thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock (estimado)</th><th>Estado</th></tr></thead>
+            <tbody id="inv-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modal-product" role="dialog">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><h3 id="modal-title">Nuevo Producto</h3><p id="modal-sub">Completa los datos para agregar el producto al catálogo.</p></div>
+      <button class="btn-close" onclick="closeModal('modal-product')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group span-2">
+        <label>Imagen del producto</label>
+        <div class="img-preview-wrap" id="img-preview-wrap" onclick="document.getElementById('img-file').click()" role="button" tabindex="0">
+          <img id="img-preview" src="" alt="Vista previa"/><div class="upload-hint"><i class="fas fa-cloud-upload-alt"></i><span>Haz clic para subir imagen</span><small>PNG, JPG — máx. 4 MB</small></div>
+        </div>
+        <input type="file" id="img-file" accept="image/*" style="display:none"/><input type="text" id="field-img" placeholder="O pega una URL de imagen" style="margin-top:8px"/>
+      </div>
+      <div class="form-group span-2"><label for="field-name">Nombre del producto *</label><input type="text" id="field-name" placeholder="Ej. Vestido de Gala Seda" required/></div>
+      <div class="form-group"><label for="field-cat">Categoría *</label><select id="field-cat" required><option value="">— Seleccionar —</option><option value="mujer">Mujer</option><option value="hombre">Hombre</option><option value="nino">Niño</option><option value="accesorios">Accesorios</option></select></div>
+      <div class="form-group"><label for="field-price">Precio (C$) *</label><input type="number" id="field-price" placeholder="0.00" min="0" step="0.01" required/></div>
+      <div class="form-group"><label for="field-discount">Descuento (%)</label><input type="number" id="field-discount" placeholder="0" min="0" max="99" step="1" value="0"/></div>
+      <div class="form-group"><label for="field-status">Estado</label><select id="field-status"><option value="activo">Activo</option><option value="inactivo">Inactivo</option></select></div>
+      <div class="form-group span-2"><label for="field-desc">Descripción</label><textarea id="field-desc" placeholder="Materiales, tallas, etc." rows="3"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn-ghost" onclick="closeModal('modal-product')">Cancelar</button><button class="btn-primary" id="btn-save-product" onclick="saveProduct()"><i class="fas fa-save"></i> Guardar producto</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-delete" role="alertdialog">
+  <div class="modal-box modal-sm">
+    <div class="delete-icon"><i class="fas fa-trash-alt"></i></div>
+    <h3 id="delete-modal-title" style="font-family:var(--font-display);color:var(--champagne);margin-bottom:10px">¿Eliminar producto?</h3>
+    <p class="delete-msg">Esta acción no se puede deshacer.</p><p class="delete-name" id="delete-product-name"></p>
+    <div class="delete-actions">
+      <button class="btn-ghost" onclick="closeModal('modal-delete')">Cancelar</button>
+      <button class="btn-primary" id="btn-confirm-delete" style="background:var(--coral)" onclick="confirmDelete()"><i class="fas fa-trash-alt"></i> Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-view" role="dialog">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div><h3 id="view-name" style="font-family:var(--font-display);color:var(--champagne)"></h3><p id="view-cat" style="color:var(--muted);font-size:.85rem;margin-top:4px"></p></div>
+      <button class="btn-close" onclick="closeModal('modal-view')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="view-grid">
+      <div class="view-img-wrap"><img id="view-img" src="" alt=""/></div>
+      <div class="view-fields">
+        <div><p class="view-field-label">Precio</p><p id="view-price" class="view-price"></p></div>
+        <div><p class="view-field-label">Descuento</p><p id="view-discount" class="view-discount-val"></p></div>
+        <div><p class="view-field-label">Estado</p><span id="view-status" class="badge"></span></div>
+        <div><p class="view-field-label">Descripción</p><p id="view-desc" class="view-field-val"></p></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn-ghost" onclick="closeModal('modal-view')">Cerrar</button><button class="btn-primary" id="view-edit-btn"><i class="fas fa-edit"></i> Editar</button></div>
+  </div>
+</div>
+
+<div id="admin-toast" role="status"></div>
+<script src="admin.js"></script>
+</body>
+</html>

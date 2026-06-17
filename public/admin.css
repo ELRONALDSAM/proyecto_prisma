@@ -1,0 +1,54 @@
+:root{--blk:#0a0a0a;--drk:#111218;--d2:#1a1b24;--d3:#24253a;--chm:#e8d9b5;--chl:#f4eedf;--crl:#ff5c3a;--crd:#d94427;--crdm:rgba(255,92,58,.12);--sg:#7eb5a0;--wht:#fafaf8;--mtd:#8a8b9a;--brd:rgba(232,217,181,.15);--brdh:rgba(232,217,181,.3);--rad-sm:6px;--rad-md:12px;--trans:.3s cubic-bezier(.4,0,.2,1);--side-w:260px}
+*,::after,::before{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{background:var(--drk);color:var(--wht);font-family:'DM Sans',system-ui,sans-serif;display:flex;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;background:0 0;font:inherit;color:inherit}
+ul{list-style:none}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif}
+.flex-center,.flex-between{display:flex;align-items:center}
+.flex-between{justify-content:space-between}
+.text-coral{color:var(--crl)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--drk)}
+::-webkit-scrollbar-thumb{background:var(--d3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--mtd)}
+
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--side-w);background:var(--d2);border-right:1px solid var(--brd);display:flex;flex-direction:column;z-index:100;transition:transform var(--trans)}
+.sidebar__brand{padding:28px 24px 20px;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:10px}
+.sidebar__brand .logo-text{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;letter-spacing:.1em;color:var(--chm)}
+.admin-tag{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--crl);background:var(--crdm);border:1px solid rgba(255,92,58,.3);padding:2px 8px;border-radius:3px;margin-left:auto}
+.sidebar__nav{flex:1;padding:20px 0;overflow-y:auto}
+.nav-section-label{font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--mtd);padding:16px 24px 8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;font-size:.85rem;color:var(--mtd);cursor:pointer;transition:var(--trans);border-left:2px solid transparent}
+.nav-item:hover,.nav-item.active{color:var(--wht);background:rgba(255,255,255,.04)}
+.nav-item.active{color:var(--crl);border-left-color:var(--crl);background:var(--crdm)}
+.main{margin-left:var(--side-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(10,10,10,.5);backdrop-filter:blur(16px);border-bottom:1px solid var(--brd);position:sticky;top:0;z-index:50}
+.content{padding:36px;flex:1}
+
+.btn-primary,.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:var(--rad-sm);font-size:.8rem;font-weight:600;transition:var(--trans)}
+.btn-primary{background:var(--crl);color:#fff;text-transform:uppercase;letter-spacing:.07em}
+.btn-ghost{background:0 0;color:var(--mtd);border:1px solid var(--brd)}
+.btn-ghost:hover{border-color:var(--brdh);color:var(--wht)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px}
+.stat-card{background:var(--d2);border:1px solid var(--brd);border-radius:var(--rad-md);padding:20px}
+.stat-card__val{font-size:1.8rem;font-weight:700;color:var(--chm)}
+
+.table-wrap{background:var(--d2);border:1px solid var(--brd);border-radius:var(--rad-md);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+td,th{padding:14px 18px;text-align:left}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--d2);border:1px solid var(--brd);border-radius:20px;width:min(600px,95vw);padding:36px}
+
+@media (max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .hamburger-admin{display:flex!important}
+}

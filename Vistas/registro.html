@@ -1,0 +1,92 @@
+
+<form id="registerForm">
+
+    <input
+        type="text"
+        id="nombre"
+        placeholder="Nombre"
+        required
+    >
+
+    <input
+        type="email"
+        id="email"
+        placeholder="Correo"
+        required
+    >
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Contraseña"
+        required
+    >
+
+    <button type="submit">
+        Registrarse
+    </button>
+
+</form>
+
+<p id="mensaje"></p>
+
+<script>
+document
+.getElementById('registerForm')
+.addEventListener('submit', async (e) => {
+
+    e.preventDefault();
+
+    const nombre =
+    document.getElementById('nombre').value;
+
+    const email =
+    document.getElementById('email').value;
+
+    const password =
+    document.getElementById('password').value;
+
+    try {
+
+        const response = await fetch('/users', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+                nombre,
+                email,
+                password
+            })
+
+        });
+
+        const data = await response.json();
+
+        if(response.ok){
+
+            document.getElementById('mensaje')
+            .innerText =
+            'Usuario registrado correctamente';
+
+        } else {
+
+            document.getElementById('mensaje')
+            .innerText =
+            data.error;
+
+        }
+
+    } catch(error){
+
+        document.getElementById('mensaje')
+        .innerText =
+        'Error de conexión';
+
+    }
+
+});
+</script>

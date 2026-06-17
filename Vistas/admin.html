@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador - Prisma</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#111827;
+      color:white;
+      margin:0;
+      padding:40px;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:auto;
+    }
+
+    .card{
+      background:#1f2937;
+      padding:20px;
+      border-radius:10px;
+      margin-bottom:20px;
+    }
+
+    h1{
+      color:#f97316;
+    }
+
+    button{
+      background:#f97316;
+      border:none;
+      padding:10px 20px;
+      color:white;
+      border-radius:5px;
+      cursor:pointer;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:20px;
+    }
+
+    th,td{
+      border:1px solid #374151;
+      padding:10px;
+      text-align:left;
+    }
+
+    th{
+      background:#374151;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>Panel de Administración</h1>
+
+  <div class="card">
+    <h2>Bienvenido Administrador</h2>
+    <p>Desde aquí podrás gestionar productos, usuarios y pedidos.</p>
+  </div>
+
+  <div class="card">
+    <h2>Productos</h2>
+
+    <button onclick="location.href='/productos.html'">
+      Ver Productos
+    </button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Producto</th>
+          <th>Precio</th>
+        </tr>
+      </thead>
+
+      <tbody id="productos">
+        <tr>
+          <td>1</td>
+          <td>Ejemplo</td>
+          <td>C$100</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>
+
+</body>
+</html>

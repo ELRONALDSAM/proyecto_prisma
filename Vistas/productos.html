@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Productos</title>
+</head>
+<body>
+
+<h1>Lista de Productos</h1>
+
+<button onclick="cargarProductos()">
+    Ver Productos
+</button>
+
+<ul id="productos"></ul>
+
+<script>
+
+async function cargarProductos() {
+
+    const response =
+        await fetch(
+            'http://localhost:3005/products'
+        );
+
+    const products =
+        await response.json();
+
+    let html = '';
+
+    products.forEach(product => {
+
+        html += `
+        <li>
+            ${product.nombre}
+        </li>
+        `;
+
+    });
+
+    document.getElementById(
+        'productos'
+    ).innerHTML = html;
+
+}
+
+</script>
+
+</body>
+</html>
