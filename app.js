@@ -36,7 +36,7 @@ app.use('/categories', categoryRoutes);
 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'vistas', 'index.html'));
+    res.sendFile(path.join(__dirname, 'Vistas', 'index.html'));
 });
 
 app.get('/profile', authenticateToken, (req, res) => {
@@ -47,23 +47,23 @@ app.get('/profile', authenticateToken, (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'vistas', 'login.html'));
+    res.sendFile(path.join(__dirname, 'Vistas', 'login.html'));
 });
 
 app.get('/registro', (req, res) => {
-    res.sendFile(path.join(__dirname, 'vistas', 'registro.html'));
+    res.sendFile(path.join(__dirname, 'Vistas', 'registro.html'));
 });
 
 app.get('/productos', (req, res) => {
-    res.sendFile(path.join(__dirname, 'vistas', 'productos.html'));
+    res.sendFile(path.join(__dirname, 'Vistas', 'productos.html'));
 });
 
 app.get('/carrito', (req, res) => {
-    res.sendFile(path.join(__dirname, 'vistas', 'carrito.html'));
+    res.sendFile(path.join(__dirname, 'Vistas', 'carrito.html'));
 });
 
 app.get('/contacto', (req, res) => {
-    res.sendFile(path.join(__dirname, 'vistas', 'contacto.html'));
+    res.sendFile(path.join(__dirname, 'Vistas   ', 'contacto.html'));
 });
 
 app.get('/error', (req, res, next) => {
