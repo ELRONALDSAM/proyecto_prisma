@@ -257,7 +257,6 @@ em { font-style: italic; color: var(--champagne); }
   .offers-grid { grid-template-columns: 1fr; }
   .blog-grid { grid-template-columns: 1fr; }
   .product-detail__grid { grid-template-columns: 1fr; }
-  .btn-login-nav { display: none; }
   .section { padding: 60px 5%; }
 }
 /* ══════════════════════════════════
@@ -366,7 +365,6 @@ em { font-style: italic; color: var(--champagne); }
   to   { opacity: 1; transform: translateY(0); }
 }
 @media (max-width: 640px) {
-  .btn-login-nav { display: none; }
   .user-greeting { font-size: .75rem; }
   #user-name-display { max-width: 80px; }
   .category-filters { gap: 6px; }
@@ -496,3 +494,139 @@ em { font-style: italic; color: var(--champagne); }
 .password-strength.strength-weak span   { width: 33%;  background: var(--coral); }
 .password-strength.strength-medium span { width: 66%;  background: #f5a623; }
 .password-strength.strength-strong span { width: 100%; background: var(--sage); }
+
+/* User Area & Account Dropdown */
+#user-area {
+  position: relative;
+}
+.account-dropdown {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  /* Ocultar el área de usuario en el header superior móvil */
+  #user-area {
+    display: none !important;
+  }
+
+  /* Hacer que el menú móvil sea scrollable si tiene mucho contenido */
+  .header__nav.open {
+    display: flex !important;
+    position: fixed !important;
+    top: var(--header-h) !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: calc(100vh - var(--header-h)) !important;
+    background: rgba(10, 10, 10, 0.98) !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 30px 0 60px 0 !important;
+    overflow-y: auto !important;
+    z-index: 9999 !important;
+  }
+  .header__nav.open .nav-list {
+    flex-direction: column !important;
+    gap: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .header__nav.open .nav-list li a {
+    display: block !important;
+    padding: 12px 20px !important;
+    font-size: 1.15rem !important;
+    text-align: center !important;
+  }
+
+  /* Mostrar elementos móviles */
+  .mobile-only {
+    display: block !important;
+  }
+
+  /* Sección Cuenta en menú hamburguesa */
+  .nav-account-section {
+    border-top: 1px solid var(--border) !important;
+    margin-top: 24px !important;
+    padding-top: 24px !important;
+    width: 80% !important;
+    text-align: center !important;
+  }
+  .nav-account-title {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.15em !important;
+    text-transform: uppercase !important;
+    color: var(--champagne) !important;
+    margin-bottom: 16px !important;
+  }
+  .nav-account-greeting {
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    color: var(--white) !important;
+    margin-bottom: 16px !important;
+    font-family: var(--font-display) !important;
+  }
+  .nav-account-item {
+    display: block !important;
+    padding: 12px 20px !important;
+    color: var(--muted) !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    transition: var(--transition) !important;
+  }
+  .nav-account-item:hover {
+    color: var(--white) !important;
+  }
+  .nav-account-item--logout {
+    color: var(--coral) !important;
+    font-weight: 600 !important;
+  }
+
+  /* Modal de Historial de Pedidos */
+  .modal__box--orders {
+    width: min(500px, 95vw);
+  }
+  .orders-loading,
+  .orders-empty,
+  .orders-error {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .orders-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .order-history-item {
+    background: var(--dark-3);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    border: 1px solid var(--border);
+    transition: var(--transition);
+  }
+  .order-history-item:hover {
+    border-color: rgba(232, 217, 181, 0.3);
+  }
+  .order-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .order-id {
+    font-weight: 600;
+    color: var(--champagne);
+    font-size: 0.95rem;
+  }
+  .order-total {
+    font-weight: 700;
+    color: var(--coral);
+    font-size: 1.05rem;
+  }
+}

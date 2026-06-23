@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Prisma — Primavera 2026</title>
-  <link rel="stylesheet" href="/style.css"/>
+  <link rel="stylesheet" href="/style.css?v=1.0.2"/>
   
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -19,6 +19,21 @@
       <li><a href="#inicio">Inicio</a></li><li><a href="#categorias">Colección</a></li>
       <li><a href="#novedades">Catálogo</a></li><li><a href="#ofertas">Ofertas</a></li>
       <li><a href="#blog">Blog</a></li><li><a href="#contacto">Contacto</a></li>
+      <li class="mobile-only nav-account-section">
+        <div class="nav-account-title">Cuenta</div>
+        <!-- Sin sesión -->
+        <div id="nav-guest-menu">
+          <a href="#" class="nav-account-item" id="nav-login-btn">Iniciar Sesión</a>
+          <a href="#" class="nav-account-item" id="nav-register-btn">Crear Cuenta</a>
+        </div>
+        <!-- Con sesión -->
+        <div id="nav-user-menu" style="display: none;">
+          <div class="nav-account-greeting">Hola, <span id="nav-username">Usuario</span></div>
+          <a href="#favorites-section" class="nav-account-item" id="nav-favs-btn">Mis Favoritos</a>
+          <a href="#" class="nav-account-item" id="nav-orders-btn">Mis Pedidos</a>
+          <a href="#" class="nav-account-item nav-account-item--logout" id="nav-logout-btn">Cerrar Sesión</a>
+        </div>
+      </li>
     </ul>
   </nav>
   <div class="header__actions">
@@ -30,6 +45,21 @@
       <div class="user-greeting" id="user-greeting" style="display:none">
         <i class="fas fa-user-circle"></i><span id="user-name-display"></span>
         <button class="logout-btn" id="logout-btn" title="Cerrar sesión"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
+      <!-- Dropdown de cuenta para móviles -->
+      <div class="account-dropdown" id="account-dropdown" style="display: none;">
+        <!-- Estado sin sesión -->
+        <div id="dropdown-guest-menu">
+          <a href="#" class="dropdown-item" id="dropdown-login-btn">Iniciar Sesión</a>
+          <a href="#" class="dropdown-item" id="dropdown-register-btn">Crear Cuenta</a>
+        </div>
+        <!-- Estado con sesión iniciada -->
+        <div id="dropdown-user-menu" style="display: none;">
+          <div class="dropdown-user-info">Hola, <span id="dropdown-username">Usuario</span></div>
+          <a href="#favorites-section" class="dropdown-item" id="dropdown-favs-btn">Mis Favoritos</a>
+          <a href="#" class="dropdown-item" id="dropdown-orders-btn">Mis Pedidos</a>
+          <a href="#" class="dropdown-item dropdown-item--logout" id="dropdown-logout-btn">Cerrar Sesión</a>
+        </div>
       </div>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
@@ -513,9 +543,27 @@
   </div>
 </div>
 
+<!-- MODAL HISTORIAL DE PEDIDOS -->
+<div id="orders-modal" class="modal" role="dialog" aria-modal="true">
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__box modal__box--orders">
+    <button class="modal__close" data-close-modal><i class="fas fa-times"></i></button>
+    <div class="modal__header">
+      <h3>Mis Pedidos</h3>
+      <p>Historial de tus compras en Prisma</p>
+    </div>
+    <div class="modal__body" id="orders-list-container">
+      <!-- Pedidos cargados dinámicamente -->
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn-outline btn-full" data-close-modal>Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
-<script src="/script.js"></script>
+<script src="/script.js?v=1.0.2"></script>
 
 </body>
 </html>

@@ -167,6 +167,22 @@ function updateUserUI() {
   if(loginTrigger) loginTrigger.style.display = show ? 'none' : '';
   if(userGreeting)  userGreeting.style.display = show ? 'flex' : 'none';
   if(show && $('#user-name-display')) $('#user-name-display').textContent = '¡Hola, '+currentUser+'!';
+
+  // Sincronización con el dropdown de cuenta
+  const dropdownGuestMenu = $('#dropdown-guest-menu');
+  const dropdownUserMenu = $('#dropdown-user-menu');
+  const dropdownUsername = $('#dropdown-username');
+  if(dropdownGuestMenu) dropdownGuestMenu.style.display = show ? 'none' : 'block';
+  if(dropdownUserMenu) dropdownUserMenu.style.display = show ? 'block' : 'none';
+  if(show && dropdownUsername) dropdownUsername.textContent = currentUser;
+
+  // Sincronización con la sección Cuenta en el menú móvil (hamburguesa)
+  const navGuestMenu = $('#nav-guest-menu');
+  const navUserMenu = $('#nav-user-menu');
+  const navUsername = $('#nav-username');
+  if(navGuestMenu) navGuestMenu.style.display = show ? 'none' : 'block';
+  if(navUserMenu) navUserMenu.style.display = show ? 'block' : 'none';
+  if(show && navUsername) navUsername.textContent = currentUser;
 }
 
 /* ── LOGIN ── */
@@ -1279,12 +1295,159 @@ document.addEventListener('DOMContentLoaded', () => {
   const saved = loadShippingData();
   if (saved) populateCheckoutShippingSummary(saved);
 
+  // Lógica del dropdown de cuenta en móviles
+  const accountDropdown = document.getElementById('account-dropdown');
+
+  const toggleAccountDropdown = (e) => {
+    if (window.innerWidth < 991) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (accountDropdown) {
+        const isVisible = accountDropdown.style.display === 'block';
+        accountDropdown.style.display = isVisible ? 'none' : 'block';
+      }
+    }
+  };
+
+  // Clic en la "personita" cuando NO hay sesión iniciada (o desktop "Iniciar Sesión")
   const loginTrigger = document.getElementById('login-trigger');
   const loginModal = document.getElementById('login-modal');
-  if (loginTrigger && loginModal) {
+  if (loginTrigger) {
     loginTrigger.addEventListener('click', (e) => {
-      e.preventDefault();
-      loginModal.classList.add('active');
+      if (window.innerWidth < 991) {
+        toggleAccountDropdown(e);
+      } else {
+        e.preventDefault();
+        loginModal?.classList.add('active');
+      }
     });
   }
-});938
+
+  // Clic en la "personita" cuando SÍ hay sesión iniciada
+  const userGreeting = document.getElementById('user-greeting');
+  if (userGreeting) {
+    userGreeting.addEventListener('click', (e) => {
+      if (window.innerWidth < 991) {
+        if (e.target.closest('#logout-btn')) return;
+        toggleAccountDropdown(e);
+      }
+    });
+  }
+
+  // Cerrar dropdown al hacer click fuera
+  document.addEventListener('click', (e) => {
+    if (accountDropdown && accountDropdown.style.display === 'block') {
+      if (!e.target.closest('#user-area')) {
+        accountDropdown.style.display = 'none';
+      }
+    }
+  });
+
+  // Acciones internas del dropdown
+  document.getElementById('dropdown-login-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (accountDropdown) accountDropdown.style.display = 'none';
+    openModal('login-modal');
+  });
+
+  document.getElementById('dropdown-register-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (accountDropdown) accountDropdown.style.display = 'none';
+    openModal('register-modal');
+  });
+
+  document.getElementById('dropdown-favs-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (accountDropdown) accountDropdown.style.display = 'none';
+    document.querySelector('.icon-btn[aria-label="Favoritos"]')?.click();
+  });
+
+  document.getElementById('dropdown-orders-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (accountDropdown) accountDropdown.style.display = 'none';
+    openModal('orders-modal');
+    loadOrdersHistory();
+  });
+
+  document.getElementById('dropdown-logout-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (accountDropdown) accountDropdown.style.display = 'none';
+    document.getElementById('logout-btn')?.click();
+  });
+
+  // Acciones de la sección Cuenta en el menú móvil (hamburguesa)
+  document.getElementById('nav-login-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    $('#hamburger')?.click();
+    openModal('login-modal');
+  });
+
+  document.getElementById('nav-register-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    $('#hamburger')?.click();
+    openModal('register-modal');
+  });
+
+  document.getElementById('nav-favs-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    $('#hamburger')?.click();
+    document.querySelector('.icon-btn[aria-label="Favoritos"]')?.click();
+  });
+
+  document.getElementById('nav-orders-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    $('#hamburger')?.click();
+    openModal('orders-modal');
+    loadOrdersHistory();
+  });
+
+  document.getElementById('nav-logout-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    $('#hamburger')?.click();
+    document.getElementById('logout-btn')?.click();
+  });
+});
+
+async function loadOrdersHistory() {
+  const container = document.getElementById('orders-list-container');
+  if (!container) return;
+
+  container.innerHTML = '<div class="orders-loading"><i class="fas fa-spinner fa-spin"></i> Cargando tus pedidos...</div>';
+
+  if (!currentUserId) {
+    container.innerHTML = '<div class="orders-empty">Debes iniciar sesión para ver tus pedidos.</div>';
+    return;
+  }
+
+  try {
+    const response = await fetch('/orders');
+    if (!response.ok) throw new Error('Error al obtener pedidos');
+    const allOrders = await response.json();
+    
+    // Filtrar pedidos por el userId del usuario actual
+    const myOrders = allOrders.filter(order => order.userId === currentUserId);
+
+    if (myOrders.length === 0) {
+      container.innerHTML = '<div class="orders-empty">No tienes pedidos registrados todavía.</div>';
+      return;
+    }
+
+    // Renderizar los pedidos
+    let html = '<div class="orders-history-list">';
+    myOrders.forEach(order => {
+      html += `
+        <div class="order-history-item">
+          <div class="order-info">
+            <span class="order-id"><i class="fas fa-receipt"></i> Pedido #${order.id}</span>
+            <span class="order-total">${fmt(order.total)}</span>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } catch (error) {
+    console.error(error);
+    container.innerHTML = '<div class="orders-error">Hubo un problema al cargar tus pedidos. Por favor, intenta de nuevo.</div>';
+  }
+}

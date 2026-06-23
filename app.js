@@ -32,6 +32,7 @@ app.use('/orders',     orderRoutes);
 app.use('/categories', categoryRoutes);
 
 app.get('/', (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.sendFile(path.join(__dirname, 'Vistas', 'index.html'));
 });
 
