@@ -20,8 +20,6 @@ const orderRoutes       = require('./routes/orderRoutes');
 const categoryRoutes    = require('./routes/categoryRoutes');
 const authenticateToken = require('./middlewares/auth');
 
-
-app.use(express.json());
 app.use(loggerMiddleware);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -32,8 +30,6 @@ app.use('/favorites',  favoriteRoutes);
 app.use('/cart',       cartRoutes);
 app.use('/orders',     orderRoutes);
 app.use('/categories', categoryRoutes);
-
-
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Vistas', 'index.html'));
@@ -63,20 +59,19 @@ app.get('/carrito', (req, res) => {
 });
 
 app.get('/contacto', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Vistas   ', 'contacto.html'));
+    res.sendFile(path.join(__dirname, 'Vistas', 'contacto.html'));
 });
 
 app.get('/error', (req, res, next) => {
     next(new Error('Error intencional'));
 });
 
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Vistas', 'admin.html'));
+});
+
 app.use(errorHandle);
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
-});
-
-
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Vistas', 'admin.html'));
 });

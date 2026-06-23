@@ -1,71 +1,69 @@
 generator client {
-  provider = "prisma-client-js"
+provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+provider = "postgresql"
+url      = env("DATABASE_URL")
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
-  nombre       String
-  email        String @unique
-  password     String?
-  role         String?
+id           Int    @id @default(autoincrement())
+nombre       String
+email        String @unique
+password     String?
+role         String?
 
-  telefono     String?
-  direccion    String?
-  ciudad       String?
-  departamento String?
-  notas        String?
+telefono     String?
+direccion    String?
+ciudad       String?
+departamento String?
+notas        String?
+
+favorites Favorite[]
+cartItems Cart[]
 }
 
 model Product {
+id      Int @id @default(autoincrement())
+nombre  String
+precio  Float
+stock   Int
 
-  id Int @id @default(autoincrement())
-
-  nombre String
-
-  precio Float
-
-  stock Int
-
+favorites Favorite[]
+cartItems Cart[]
 }
 
 model Favorite {
-  id        Int @id @default(autoincrement())
-  userId    Int
-  productId Int
+id        Int @id @default(autoincrement())
+
+userId    Int
+productId Int
+
+user      User    @relation(fields: [userId], references: [id])
+product   Product @relation(fields: [productId], references: [id])
 }
 
 model Cart {
+id        Int @id @default(autoincrement())
 
-  id Int @id @default(autoincrement())
+userId    Int
+productId Int
 
-  userId Int
+quantity  Int @default(1)
 
-  productId Int
-
-  quantity Int @default(1)
-
+user      User    @relation(fields: [userId], references: [id])
+product   Product @relation(fields: [productId], references: [id])
 }
 
 model Order {
+id      Int @id @default(autoincrement())
 
-  id Int @id @default(autoincrement())
-
-  userId Int
-
-  total Float
-
+userId  Int
+total   Float
 }
 
 model Category {
-
-  id Int @id @default(autoincrement())
-
-  name String
-
+id    Int @id @default(autoincrement())
+name  String
 }
-

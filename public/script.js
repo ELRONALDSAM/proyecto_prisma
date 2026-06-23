@@ -1,6 +1,8 @@
 'use strict';
 
-let cart = [], currentUser = null, wishlist = {};
+let cart = [], currentUser = null, currentUserId = null, wishlist = {};
+let favoriteIdMap = {};
+let productIdToProduct = {};
 
 
 function shippingKey() {
@@ -24,18 +26,33 @@ function clearShippingData() {
 
 /* ══════════════════════════════════
    PERSISTENCIA GENERAL
-══════════════════════════════════ */
+   ══════════════════════════════════ */
 function saveWishlist() {
   try { localStorage.setItem('prisma_wishlist', JSON.stringify(wishlist)); } catch(e) {}
 }
 function loadWishlist() {
   try { const d = localStorage.getItem('prisma_wishlist'); if(d) wishlist = JSON.parse(d); } catch(e) {}
 }
-function saveUser() {
-  try { if(currentUser) localStorage.setItem('prisma_user', currentUser); else localStorage.removeItem('prisma_user'); } catch(e) {}
+function saveUser(userId) {
+  try { 
+    if(currentUser) {
+      localStorage.setItem('prisma_user', currentUser);
+      if (userId) {
+        localStorage.setItem('userId', userId);
+        currentUserId = parseInt(userId);
+      }
+    } else {
+      localStorage.removeItem('prisma_user');
+      localStorage.removeItem('userId');
+      currentUserId = null;
+    }
+  } catch(e) {}
 }
 function loadUser() {
-  try { currentUser = localStorage.getItem('prisma_user') || null; } catch(e) {}
+  try { 
+    currentUser = localStorage.getItem('prisma_user') || null; 
+    currentUserId = parseInt(localStorage.getItem('userId')) || null;
+  } catch(e) {}
 }
 
 const $ = (s, c=document) => c.querySelector(s);
@@ -182,8 +199,10 @@ $('#login-form')?.addEventListener('submit', async e => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.id);
       currentUser = data.nombre;
-      saveUser();
+      saveUser(data.id);
       updateUserUI();
+      loadFavorites();
+      loadCartFromServer();
       closeModal($('#login-modal'));
       showToast('¡Inicio de sesión exitoso! ✓', 'success');
       e.target.reset();
@@ -208,6 +227,7 @@ $('#logout-btn')?.addEventListener('click', () => {
   currentUser = null;
   saveUser();
   wishlist = {};
+  favoriteIdMap = {};
   saveWishlist();
   updateUserUI();
   $$('.product-card__wishlist').forEach(b => {
@@ -275,8 +295,10 @@ $('#register-form')?.addEventListener('submit', async e => {
     const data = await response.json();
     if(response.ok) {
       currentUser = name;
-      saveUser();
+      saveUser(data.id);
       updateUserUI();
+      loadFavorites();
+      loadCartFromServer();
       closeModal($('#register-modal'));
       showToast('¡Cuenta creada correctamente! ✓', 'success');
       e.target.reset();
@@ -303,6 +325,7 @@ $$('#register-form input').forEach(inp => inp.addEventListener('input', () => {
 function getAllProductData() {
   const cards = $$('[data-name]');
   return cards.map(c => ({
+    id:       c.dataset.productId ? parseInt(c.dataset.productId) : null,
     name:     c.dataset.name     || '',
     price:    c.dataset.price    || '',
     img:      c.dataset.img      || '',
@@ -335,7 +358,7 @@ function runSearch(query) {
   resultBox.innerHTML = `<p class="search-count">${matches.length} resultado${matches.length!==1?'s':''} para "<strong>${query}</strong>"</p>
   <div class="search-grid">
     ${matches.map(p=>`
-    <div class="search-product-card" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}" data-desc="${p.desc}" data-category="${p.category}" data-badge="${p.badge}">
+    <div class="search-product-card" data-product-id="${p.id || ''}" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}" data-desc="${p.desc}" data-category="${p.category}" data-badge="${p.badge}">
       <div class="search-product-img"><img src="${p.img}" alt="${p.name}"/>${p.badge?`<span class="offer-card__badge">${p.badge}</span>`:''}</div>
       <div class="search-product-info">
         <h4>${p.name}</h4>
@@ -379,14 +402,19 @@ function injectSearchModal() {
     const detailBtn = e.target.closest('.btn-search-detail');
     if(detailBtn) {
       const card = detailBtn.closest('[data-name]');
-      if(card) { closeModal($('#search-modal')); openProductModal(card.dataset.name, card.dataset.price, card.dataset.img, card.dataset.desc, card.dataset.badge, card.dataset.category); }
+      if(card) {
+        closeModal($('#search-modal'));
+        const id = card.dataset.productId ? parseInt(card.dataset.productId) : null;
+        openProductModal(id, card.dataset.name, card.dataset.price, card.dataset.img, card.dataset.desc, card.dataset.badge, card.dataset.category);
+      }
       return;
     }
     if(e.target.closest('.btn-add-cart')||e.target.closest('.btn-search-detail')) return;
     const sCard = e.target.closest('.search-product-card');
     if(sCard) {
       closeModal($('#search-modal'));
-      openProductModal(sCard.dataset.name, sCard.dataset.price, sCard.dataset.img, sCard.dataset.desc, sCard.dataset.badge, sCard.dataset.category);
+      const id = sCard.dataset.productId ? parseInt(sCard.dataset.productId) : null;
+      openProductModal(id, sCard.dataset.name, sCard.dataset.price, sCard.dataset.img, sCard.dataset.desc, sCard.dataset.badge, sCard.dataset.category);
     }
   });
 }
@@ -413,7 +441,7 @@ function renderFavoritesSection() {
   const grid = $('#favorites-grid');
   if(!grid) return;
   grid.innerHTML = favItems.map(p=>`
-    <div class="product-card" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}" data-desc="${p.desc}" data-category="${p.category}">
+    <div class="product-card" data-product-id="${p.id || ''}" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}" data-desc="${p.desc}" data-category="${p.category}">
       <div class="product-card__img-wrap">
         <img src="${p.img}" alt="${p.name}"/>
         <button class="product-card__wishlist active" aria-label="Favorito"><i class="fas fa-heart"></i></button>
@@ -464,17 +492,181 @@ function injectFavoritesSection() {
   }
 }
 
+// Map to cache product IDs from database
+let productMap = {};
+
+// Load product map from backend
+function loadProductMap() {
+  return fetch('/products')
+    .then(res => res.json())
+    .then(products => {
+      products.forEach(p => {
+        productMap[p.name.toLowerCase().trim()] = p.id;
+        productIdToProduct[p.id] = p;
+      });
+    })
+    .catch(err => console.error('Error al cargar mapa de productos:', err));
+}
+
+// Get ID by name (fuzzy matching helper)
+function getProductIdByName(name) {
+  if (!name) return 1;
+  const lowerName = name.toLowerCase().trim();
+  if (productMap[lowerName]) return productMap[lowerName];
+  // Substring match
+  const key = Object.keys(productMap).find(k => k.includes(lowerName) || lowerName.includes(k));
+  if (key) return productMap[key];
+  return 1;
+}
+
+// Fetch favorites from backend and sync with wishlist
+function loadFavorites() {
+  if (!currentUserId) {
+    wishlist = {};
+    favoriteIdMap = {};
+    saveWishlist();
+    updateFavIcon();
+    renderFavoritesSection();
+    syncWishlistHearts();
+    return;
+  }
+  console.log(`[loadFavorites] Cargando favoritos para el usuario ID: ${currentUserId}`);
+  fetch(`/favorites?userId=${currentUserId}`)
+    .then(res => res.json())
+    .then(favorites => {
+      console.log('[loadFavorites] Favoritos recibidos del backend:', favorites);
+      wishlist = {};
+      favoriteIdMap = {};
+      favorites.forEach(fav => {
+        if (fav.product) {
+          const name = fav.product.name || fav.product.nombre;
+          if (name) {
+            wishlist[name] = true;
+            favoriteIdMap[fav.productId] = fav.id;
+          }
+        }
+      });
+      saveWishlist();
+      updateFavIcon();
+      renderFavoritesSection();
+      syncWishlistHearts();
+    })
+    .catch(err => console.error('[loadFavorites] Error al cargar favoritos:', err));
+}
+
+function syncFavoritesWithServer() {
+  loadFavorites();
+}
+
+function loadCartFromServer() {
+  if (!currentUserId) {
+    cart = [];
+    updateCartUI();
+    updateCheckoutUI();
+    return;
+  }
+  console.log(`[loadCart] Cargando carrito de la DB para el usuario ID: ${currentUserId}`);
+  fetch(`/cart?userId=${currentUserId}`)
+    .then(res => res.json())
+    .then(dbCartItems => {
+      console.log('[loadCart] Carrito recibido del backend:', dbCartItems);
+      cart = [];
+      dbCartItems.forEach(item => {
+        const prod = productIdToProduct[item.productId];
+        if (prod) {
+          cart.push({
+            id: item.id.toString(),
+            dbId: item.id,
+            productId: item.productId,
+            name: prod.name || prod.nombre,
+            price: parseFloat(prod.price || prod.precio),
+            img: prod.img || '',
+            size: 'M',
+            qty: item.quantity
+          });
+        }
+      });
+      updateCartUI();
+      updateCheckoutUI();
+    })
+    .catch(err => console.error('[loadCart] Error al cargar carrito:', err));
+}
+
 document.addEventListener('click', e => {
   const btn = e.target.closest('.product-card__wishlist, .offer-card__wishlist');
   if(!btn) return;
   e.stopPropagation();
+  
+  if (!currentUser || !currentUserId) {
+    showToast('Inicia sesión para guardar favoritos 🔒', 'error');
+    openModal('login-modal');
+    return;
+  }
+
   const name = btn.closest('[data-name]')?.dataset.name;
   if(!name) return;
+  const card = btn.closest('[data-product-id]');
+  let prodId = card ? parseInt(card.dataset.productId) : null;
+  if (!prodId || isNaN(prodId)) {
+    prodId = getProductIdByName(name);
+  }
+  console.log(`[Click corazón] Producto: "${name}", ID del producto: ${prodId}, User ID: ${currentUserId}`);
+
+  // Toggle wishlist state
   wishlist[name] = !wishlist[name];
+
   if(wishlist[name]) {
-    fetch('/favorites', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({userId:1,productId:1}) })
-      .then(res=>res.json()).then(data=>console.log('Favorito guardado:',data)).catch(err=>console.error(err));
-  } else { delete wishlist[name]; }
+    console.log(`productId enviado desde el frontend: ${prodId}`);
+    console.log(`[Click corazón] Guardando favorito en la DB: { userId: ${currentUserId}, productId: ${prodId} }`);
+    fetch('/favorites', { 
+      method:'POST', 
+      headers:{'Content-Type':'application/json'}, 
+      body: JSON.stringify({userId: currentUserId, productId: prodId}) 
+    })
+      .then(res=>res.json())
+      .then(data=>{
+        console.log('[Click corazón] Favorito guardado en DB:', data);
+        if (data && data.id) {
+          favoriteIdMap[prodId] = data.id;
+        }
+        updateFavIcon(); 
+        renderFavoritesSection();
+      })
+      .catch(err=> {
+        console.error('[Click corazón] Error al guardar favorito:', err);
+        wishlist[name] = false;
+        updateFavIcon();
+        renderFavoritesSection();
+      });
+  } else { 
+    const favId = favoriteIdMap[prodId];
+    if (favId) {
+      console.log(`[Click corazón] Eliminando favorito ID: ${favId} para producto: ${name} (ID: ${prodId})`);
+      fetch(`/favorites/${favId}`, { 
+        method:'DELETE'
+      })
+        .then(res=>res.json())
+        .then(data=>{
+          console.log('[Click corazón] Favorito eliminado de DB:', data);
+          delete favoriteIdMap[prodId];
+          delete wishlist[name];
+          updateFavIcon(); 
+          renderFavoritesSection();
+        })
+        .catch(err=> {
+          console.error('[Click corazón] Error al eliminar favorito:', err);
+          wishlist[name] = true;
+          updateFavIcon();
+          renderFavoritesSection();
+        });
+    } else {
+      console.warn(`[Click corazón] No se encontró ID de favorito en favoriteIdMap para el producto ID: ${prodId}.`);
+      delete wishlist[name];
+      updateFavIcon(); 
+      renderFavoritesSection();
+    }
+  }
+  
   saveWishlist();
   const ico = btn.querySelector('i');
   let counter = btn.querySelector('.like-count');
@@ -514,23 +706,55 @@ function updateCartUI() {
   if(!cart.length) { con.innerHTML='<p class="empty-cart-msg">Tu carrito está vacío.</p>'; cb.disabled=true; }
   else {
     con.innerHTML=cart.map(i=>`<div class="cart-item" data-id="${i.id}"><div class="cart-item__img"><img src="${i.img}" alt="${i.name}"/></div><div class="cart-item__info"><h4>${i.name}</h4><p>Talla: ${i.size} · Cant: ${i.qty}</p></div><div><div class="cart-item__price">${fmt(i.price*i.qty)}</div><span class="cart-item__remove" data-remove="${i.id}">Eliminar</span></div></div>`).join('');
-    $$('[data-remove]',con).forEach(b=>b.addEventListener('click',()=>{cart=cart.filter(i=>i.id!==b.dataset.remove);updateCartUI();updateCheckoutUI();}));
+    $$('[data-remove]',con).forEach(b=>b.addEventListener('click',()=>{
+      const cartItemId = parseInt(b.dataset.remove);
+      if (!isNaN(cartItemId)) {
+        console.log(`[Eliminar del carrito] Enviando DELETE a /cart/${cartItemId}`);
+        fetch(`/cart/${cartItemId}`, { method: 'DELETE' })
+          .then(res => res.json())
+          .then(data => {
+            console.log('[Eliminar del carrito] Respuesta recibida:', data);
+            cart = cart.filter(i=>i.id!==b.dataset.remove);
+            updateCartUI();
+            updateCheckoutUI();
+          })
+          .catch(err => console.error('[Eliminar del carrito] Error:', err));
+      } else {
+        cart = cart.filter(i=>i.id!==b.dataset.remove);
+        updateCartUI();
+        updateCheckoutUI();
+      }
+    }));
     cb.disabled=false;
   }
   $('#cart-subtotal').textContent=fmt(total); $('#cart-final-total').textContent=fmt(total);
 }
 
 function addToCart(name, price, img, size='M') {
-  if (!currentUser) {
+  if (!currentUser || !currentUserId) {
     showToast('Inicia sesión para agregar productos al carrito 🔒', 'error');
     openModal('login-modal');
     return;
   }
-  const id = name + '-' + size, ex = cart.find(i => i.id === id);
-  ex ? ex.qty++ : cart.push({id, name, price: parseFloat(price), img, size, qty: 1});
-  updateCartUI();
-  updateCheckoutUI();
-  showToast(`"${name}" añadido al carrito ✓`);
+  const prodId = getProductIdByName(name);
+  const qty = 1;
+
+  console.log('currentUser:', currentUser);
+  console.log('currentUserId:', currentUserId);
+  console.log('productId:', prodId);
+
+  fetch('/cart', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: currentUserId, productId: prodId, quantity: qty })
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log('respuesta del backend:', data);
+      showToast(`"${name}" añadido al carrito ✓`);
+      loadCartFromServer();
+    })
+    .catch(err => console.error('Error al añadir al carrito:', err));
 }
 
 function updateCheckoutUI() {
@@ -560,7 +784,8 @@ document.addEventListener('click', e => {
   const card=e.target.closest('[data-name]'); if(!card) return;
   const badge=card.querySelector('.offer-card__badge')?.textContent||card.dataset.badge||'';
   const cat=card.dataset.category||'';
-  openProductModal(card.dataset.name, card.dataset.price, card.dataset.img, card.dataset.desc, badge, cat);
+  const id = card.dataset.productId ? parseInt(card.dataset.productId) : null;
+  openProductModal(id, card.dataset.name, card.dataset.price, card.dataset.img, card.dataset.desc, badge, cat);
 });
 
 /* ══════════════════════════════════
@@ -749,7 +974,7 @@ $('#btn-edit-shipping')?.addEventListener('click', () => {
 ══════════════════════════════════ */
 let detailQty = 1;
 
-function openProductModal(name, price, img, desc, badge, category) {
+function openProductModal(id, name, price, img, desc, badge, category) {
   const m=$('#product-detail-modal');
   $('#detail-name').textContent = name;
   $('#detail-price').textContent = fmt(price);
@@ -766,26 +991,91 @@ function openProductModal(name, price, img, desc, badge, category) {
   wishBtn.querySelector('i').className = liked?'fas fa-heart':'far fa-heart';
   wishBtn.classList.toggle('liked', liked);
   $$('.size-btn').forEach(b=>b.classList.toggle('active', b.dataset.size==='M'));
+  m.dataset.productId=id || '';
   m.dataset.productName=name; m.dataset.productPrice=price; m.dataset.productImg=img;
   openModal('product-detail-modal');
 }
 
 $('#detail-wish-btn')?.addEventListener('click', () => {
-  const name=$('#product-detail-modal').dataset.productName; if(!name) return;
-  wishlist[name]=!wishlist[name];
-  if(!wishlist[name]) delete wishlist[name];
+  const m = $('#product-detail-modal');
+  const name = m.dataset.productName; if(!name) return;
+  
+  if (!currentUser || !currentUserId) {
+    showToast('Inicia sesión para guardar favoritos 🔒', 'error');
+    openModal('login-modal');
+    return;
+  }
+
+  const prodId = m.dataset.productId ? parseInt(m.dataset.productId) : null;
+  console.log(`[Modal corazón] Click en favorito. Producto: "${name}", ID del producto: ${prodId}, User ID: ${currentUserId}`);
+
+  wishlist[name] = !wishlist[name];
+
+  if (wishlist[name]) {
+    console.log(`productId enviado desde el frontend: ${prodId}`);
+    console.log(`[Modal corazón] Guardando favorito en la DB: { userId: ${currentUserId}, productId: ${prodId} }`);
+    fetch('/favorites', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUserId, productId: prodId })
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('[Modal corazón] Respuesta recibida del backend (POST):', data);
+        if (data && data.id) {
+          favoriteIdMap[prodId] = data.id;
+        }
+        console.log('Contenido de favoriteIdMap:', favoriteIdMap);
+        updateFavIcon();
+        renderFavoritesSection();
+      })
+      .catch(err => {
+        console.error('[Modal corazón] Error al guardar favorito:', err);
+        wishlist[name] = false;
+        updateFavIcon();
+        renderFavoritesSection();
+      });
+  } else {
+    const favId = favoriteIdMap[prodId];
+    if (favId) {
+      console.log(`[Modal corazón] Eliminando favorito ID: ${favId} para producto: ${name} (ID: ${prodId})`);
+      fetch(`/favorites/${favId}`, {
+        method: 'DELETE'
+      })
+        .then(res => res.json())
+        .then(data => {
+          console.log('[Modal corazón] Respuesta recibida del backend (DELETE):', data);
+          delete favoriteIdMap[prodId];
+          delete wishlist[name];
+          console.log('Contenido de favoriteIdMap:', favoriteIdMap);
+          updateFavIcon();
+          renderFavoritesSection();
+        })
+        .catch(err => {
+          console.error('[Modal corazón] Error al eliminar favorito:', err);
+          wishlist[name] = true;
+          updateFavIcon();
+          renderFavoritesSection();
+        });
+    } else {
+      console.warn(`[Modal corazón] No se encontró ID de favorito en favoriteIdMap para el producto ID: ${prodId}.`);
+      delete wishlist[name];
+      updateFavIcon();
+      renderFavoritesSection();
+    }
+  }
+
   saveWishlist();
-  const btn=$('#detail-wish-btn');
-  btn.querySelector('i').className = wishlist[name]?'fas fa-heart':'far fa-heart';
+  const btn = $('#detail-wish-btn');
+  btn.querySelector('i').className = wishlist[name] ? 'fas fa-heart' : 'far fa-heart';
   btn.classList.toggle('liked', !!wishlist[name]);
-  $$('.product-card__wishlist, .offer-card__wishlist').forEach(b=>{
-    const c=b.closest('[data-name]'); if(c&&c.dataset.name===name){
-      b.classList.toggle('active',!!wishlist[name]);
-      b.querySelector('i').className=wishlist[name]?'fas fa-heart':'far fa-heart';
+  $$('.product-card__wishlist, .offer-card__wishlist').forEach(b => {
+    const c = b.closest('[data-name]'); if (c && c.dataset.name === name) {
+      b.classList.toggle('active', !!wishlist[name]);
+      b.querySelector('i').className = wishlist[name] ? 'fas fa-heart' : 'far fa-heart';
     }
   });
-  updateFavIcon(); renderFavoritesSection();
-  showToast(wishlist[name]?'Añadido a favoritos ♥':'Eliminado de favoritos');
+  showToast(wishlist[name] ? 'Añadido a favoritos ♥' : 'Eliminado de favoritos');
 });
 
 $$('.size-btn').forEach(b=>b.addEventListener('click',()=>{
@@ -867,31 +1157,62 @@ $('#pay-now-btn')?.addEventListener('click', () => {
   const sub = cart.reduce((s,i)=>s+i.price*i.qty, 0);
   const total = sub + 80;
 
-  /* Datos de envío guardados */
-  const shippingData = loadShippingData();
+  console.log('=== CREANDO ORDEN ===');
+  console.log('userId:', currentUserId);
+  console.log('total:', total);
 
-  /* Mostrar modal de éxito */
-  const addrBox = $('#order-success-address');
-  const totalBox = $('#order-success-total');
-  if (addrBox && shippingData) {
-    addrBox.innerHTML = `<strong>Dirección de entrega</strong>${shippingData.name}<br>${shippingData.address}, ${shippingData.city}${shippingData.dept ? ', ' + shippingData.dept : ''}<br>${shippingData.phone}`;
-  } else if (addrBox) {
-    addrBox.innerHTML = '';
-  }
-  if (totalBox) totalBox.textContent = `Total pagado: ${fmt(total)}`;
+  fetch('/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      userId: currentUserId,
+      total: total
+    })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Error al procesar la orden');
+    return res.json();
+  })
+  .then(newOrder => {
+    console.log('[createOrder] Respuesta recibida del backend:', newOrder);
 
-  /* Limpiar estado */
-  cart = [];
-  updateCartUI();
-  closeAll();
-  ['card-name','card-number','expiry-date','cvv'].forEach(id => {
-    const inp=document.getElementById(id); if(inp) inp.value='';
-    setCheckoutFieldError(id,'');
+    /* Datos de envío guardados */
+    const shippingData = loadShippingData();
+
+    /* Mostrar modal de éxito */
+    const addrBox = $('#order-success-address');
+    const totalBox = $('#order-success-total');
+    if (addrBox && shippingData) {
+      addrBox.innerHTML = `<strong>Dirección de entrega</strong>${shippingData.name}<br>${shippingData.address}, ${shippingData.city}${shippingData.dept ? ', ' + shippingData.dept : ''}<br>${shippingData.phone}`;
+    } else if (addrBox) {
+      addrBox.innerHTML = '';
+    }
+    if (totalBox) totalBox.textContent = `Total pagado: ${fmt(total)}`;
+
+    /* Limpiar estado */
+    cart = [];
+    updateCartUI();
+    updateCheckoutUI();
+    loadCartFromServer();
+
+    showToast('Compra realizada correctamente ✅', 'success');
+
+    closeAll();
+    ['card-name','card-number','expiry-date','cvv'].forEach(id => {
+      const inp=document.getElementById(id); if(inp) inp.value='';
+      setCheckoutFieldError(id,'');
+    });
+    $('#pay-now-btn').disabled = true;
+
+    /* Abrir modal de confirmación */
+    setTimeout(() => openModal('order-success-modal'), 200);
+  })
+  .catch(err => {
+    console.error('[Pagar] Error:', err);
+    showToast('Error al procesar el pago y crear la orden ❌', 'error');
   });
-  $('#pay-now-btn').disabled = true;
-
-  /* Abrir modal de confirmación */
-  setTimeout(() => openModal('order-success-modal'), 200);
 });
 
 /* ── CONTACTO ── */
@@ -945,9 +1266,13 @@ document.addEventListener('DOMContentLoaded', () => {
   updateUserUI();
   injectSearchModal();
   injectFavoritesSection();
-  syncWishlistHearts();
-  updateFavIcon();
-  renderFavoritesSection();
+
+  // Cargar productos para mapear IDs y luego cargar favoritos y carrito del servidor
+  loadProductMap().then(() => {
+    loadFavorites();
+    loadCartFromServer();
+  });
+
   validateCheckoutForm();
 
   /* Rellenar shipping si ya hay datos */

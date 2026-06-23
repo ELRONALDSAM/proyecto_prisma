@@ -1,11 +1,9 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 const getAllFavorites = async () => {
-    return await prisma.favorite.findMany();
+  return await prisma.favorite.findMany();
 };
 
 module.exports = {
-    getAllFavorites
+  getAllFavorites
 };
