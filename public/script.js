@@ -727,34 +727,9 @@ $('#shipping-form')?.addEventListener('submit', e => {
   };
 
   
-if (saveChk?.checked) {
 
-  const userId = localStorage.getItem('userId');
 
-  fetch(`/users/${userId}/address`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      telefono: shippingData.phone,
-      direccion: shippingData.address,
-      ciudad: shippingData.city,
-      departamento: shippingData.dept,
-      notas: shippingData.notes
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log('Dirección guardada:', data);
-    showToast('Datos de envío guardados ✓', 'success');
-  })
-  .catch(err => {
-    console.error(err);
-    showToast('Error al guardar dirección', 'error');
-  });
 
-}
 /* Rellena el resumen de envío en el modal de pago */
 function populateCheckoutShippingSummary(data) {
   const namePhone = $('#css-name-phone');

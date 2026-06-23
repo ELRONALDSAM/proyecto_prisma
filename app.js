@@ -1,8 +1,14 @@
 require('dotenv').config();
 
 const express = require('express');
-const path    = require('path');
+const cors = require('cors');
+const path = require('path');
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.json());
 
 const loggerMiddleware  = require('./middlewares/logger');
 const errorHandle       = require('./middlewares/errorHandle');
@@ -14,8 +20,6 @@ const orderRoutes       = require('./routes/orderRoutes');
 const categoryRoutes    = require('./routes/categoryRoutes');
 const authenticateToken = require('./middlewares/auth');
 
-const app  = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(loggerMiddleware);
@@ -72,9 +76,6 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
 });
 
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'Vistas', 'admin.html'));
