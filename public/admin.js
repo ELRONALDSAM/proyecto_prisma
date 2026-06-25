@@ -2,8 +2,8 @@
 
 const CONFIG = { perPage: 8, apiBase: '', stockList: [12,8,24,5,3,17,9,31,6,2,14,19,7] };
 const CAT_LABEL = { mujer: 'Mujer', hombre: 'Hombre', nino: 'Niño', accesorios: 'Accesorios' };
-const PAGE_TITLE = { productos: 'Productos', categorias: 'Categorías', usuarios: 'Usuarios' };
-const state = { products: [], users: [], activityLog: [], nextId: 1, editingId: null, deletingId: null, currentPage: 1 };
+const PAGE_TITLE = { productos: 'Productos', categorias: 'Categorías' };
+const state = { products: [], activityLog: [], nextId: 1, editingId: null, deletingId: null, currentPage: 1 };
 
 const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
 const fmt = n => 'C$ ' + parseFloat(n).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -23,23 +23,6 @@ async function apiLoadProducts() {
     console.error('Error cargando productos:', err);
     state.products = SEED_PRODUCTS;
     state.nextId = SEED_PRODUCTS.length + 1;
-  }
-}
-
-async function apiLoadUsers() {
-  try {
-    const token = localStorage.getItem('token');
-    const r = await fetch(`${CONFIG.apiBase}/users`, {
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    });
-    if (!r.ok) throw new Error('Error al cargar usuarios');
-    const d = await r.json();
-    state.users = d;
-  } catch (err) {
-    console.error('Error cargando usuarios:', err);
-    state.users = [];
   }
 }
 
@@ -81,8 +64,7 @@ async function apiDeleteProduct(id) {
 
 const renderPage = p => ({
   productos: renderProducts,
-  categorias: renderCategorias,
-  usuarios: renderUsuarios
+  categorias: renderCategorias
 })[p]?.();
 
 const getFiltered = () => {
@@ -203,31 +185,6 @@ function renderCategorias() {
   }
 }
 
-async function renderUsuarios() {
-  await apiLoadUsers();
-  const u = state.users || [];
-  const tbody = el('users-tbody');
-  if (tbody) {
-    tbody.innerHTML = u.length ? u.map(x => `
-      <tr>
-        <td>${x.id}</td>
-        <td><strong>${esc(x.nombre)}</strong></td>
-        <td>${esc(x.email)}</td>
-        <td><span class="badge ${x.role === 'ADMIN' ? 'badge-admin' : 'badge-user'}">${x.role}</span></td>
-      </tr>
-    `).join('') : `
-      <tr>
-        <td colspan="4">
-          <div class="empty-state">
-            <i class="fas fa-users-slash"></i>
-            <p>No se encontraron usuarios.</p>
-          </div>
-        </td>
-      </tr>
-    `;
-  }
-}
-
 const navTo = p => {
   $$('.page, [data-page]').forEach(n => n.classList.remove('active'));
   el(`page-${p}`)?.classList.add('active');
@@ -299,7 +256,7 @@ async function saveProduct() {
     if (res) {
       const p = state.products.find(x => x.id === state.editingId);
       if (p) Object.assign(p, res);
-      showToast(`"${n}" actualizado ✓`);
+      showToast(`"${n}" actualizado`);
     } else {
       showToast('Error al actualizar producto', 'err');
     }
@@ -307,7 +264,7 @@ async function saveProduct() {
     const res = await apiSaveProduct(payload);
     if (res) {
       state.products.push(res);
-      showToast(`"${n}" agregado ✓`);
+      showToast(`"${n}" agregado`);
     } else {
       showToast('Error al agregar producto', 'err');
     }
@@ -332,7 +289,7 @@ async function confirmDelete() {
     const ok = await apiDeleteProduct(state.deletingId);
     if (ok) {
       state.products = state.products.filter(x => x.id !== state.deletingId);
-      showToast(`"${p.name}" eliminado.`, 'err');
+      showToast(`"${p.name}" eliminado`, 'err');
     } else {
       showToast('Error al eliminar producto', 'err');
     }
@@ -374,6 +331,7 @@ const handleLogout = () => {
   localStorage.removeItem('role');
   localStorage.removeItem('user');
   localStorage.removeItem('userId');
+  document.cookie = "token=; path=/; max-age=0; SameSite=Strict";
   showToast('Cerrando sesión...', 'ok');
   setTimeout(() => window.location.replace('/'), 1000);
 };
@@ -405,7 +363,7 @@ function initListeners() {
       el('img-preview').src = data.url;
       el('img-preview-wrap').classList.add('has-img');
       el('field-img').value = data.url;
-      showToast('Imagen subida con éxito ✓');
+      showToast('Imagen subida con éxito');
     } catch (err) {
       showToast(err.message || 'Error al subir imagen', 'err');
       console.error(err);
@@ -464,6 +422,7 @@ function initListeners() {
   }));
 
   el('btn-new-product')?.addEventListener('click', () => openModal('add'));
+  el('btn-new-product-table')?.addEventListener('click', () => openModal('add'));
   el('btn-save-product')?.addEventListener('click', saveProduct);
   el('btn-confirm-delete')?.addEventListener('click', confirmDelete);
   el('btn-go-home')?.addEventListener('click', () => window.location.href = '/');

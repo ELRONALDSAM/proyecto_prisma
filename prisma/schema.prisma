@@ -12,7 +12,7 @@ id           Int    @id @default(autoincrement())
 nombre       String
 email        String @unique
 password     String?
-role         String @default("USER")
+role         String @default("CLIENTE")
 
 telefono     String?
 direccion    String?

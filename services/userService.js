@@ -38,7 +38,8 @@ const createUser = async (nombre, email, password) => {
     data: {
       nombre,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: 'CLIENTE'
     }
   });
 };

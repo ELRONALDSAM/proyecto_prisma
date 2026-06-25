@@ -129,7 +129,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const userRole = user.role || 'USER';
+    const userRole = user.role || 'CLIENTE';
 
     const token = jwt.sign(
       {

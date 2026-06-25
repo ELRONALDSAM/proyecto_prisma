@@ -43,32 +43,42 @@ app.get('/profile', authenticateToken, (req, res) => {
     });
 });
 
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Vistas', 'login.html'));
-});
-
-app.get('/registro', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Vistas', 'registro.html'));
-});
-
-app.get('/productos', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Vistas', 'productos.html'));
-});
-
-app.get('/carrito', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Vistas', 'carrito.html'));
-});
-
-app.get('/contacto', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Vistas', 'contacto.html'));
-});
-
 app.get('/error', (req, res, next) => {
     next(new Error('Error intencional'));
 });
 
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Vistas', 'admin.html'));
+    let token = null;
+    
+    if (req.headers.cookie) {
+        const cookies = req.headers.cookie.split(';').reduce((acc, c) => {
+            const [k, ...v] = c.split('=');
+            if (k && v) {
+                acc[k.trim()] = v.join('=').trim();
+            }
+            return acc;
+        }, {});
+        token = cookies['token'];
+    }
+    
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token && req.query.token) {
+        token = req.query.token;
+    }
+    
+    if (!token) {
+        return res.status(403).send('Acceso denegado. Se requiere autenticación.');
+    }
+    
+    const jwt = require('jsonwebtoken');
+    jwt.verify(token, process.env.JWT_SECRET, (err, decodedUser) => {
+        if (err || !decodedUser || decodedUser.role !== 'ADMIN') {
+            return res.status(403).send('Acceso denegado. Se requiere rol de administrador.');
+        }
+        res.sendFile(path.join(__dirname, 'Vistas', 'admin.html'));
+    });
 });
 
 app.use(errorHandle);

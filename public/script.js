@@ -198,6 +198,42 @@ function updateUserUI() {
   if(show && navUsername) navUsername.textContent = currentUser;
 }
 
+async function loadUserDataFromServer() {
+  if (!currentUser || !currentUserId) return;
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  
+  try {
+    const res = await fetch(`/users/${currentUserId}`, {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      console.log('[loadUserDataFromServer] Datos del usuario recibidos:', data);
+      
+      if (data.direccion || data.telefono || data.ciudad || data.departamento || data.notas) {
+        const shippingData = {
+          name: data.nombre,
+          phone: data.telefono || '',
+          email: data.email || '',
+          address: data.direccion || '',
+          city: data.ciudad || '',
+          dept: data.departamento || '',
+          notes: data.notas || '',
+          savedAt: new Date().toISOString()
+        };
+        saveShippingData(shippingData);
+        populateCheckoutShippingSummary(shippingData);
+        prefillShippingForm();
+      }
+    }
+  } catch (err) {
+    console.error('Error al cargar datos de usuario desde el servidor:', err);
+  }
+}
+
 /* ── LOGIN ── */
 $('#login-form')?.addEventListener('submit', async e => {
   e.preventDefault();
@@ -227,14 +263,16 @@ $('#login-form')?.addEventListener('submit', async e => {
     if (response.ok) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.id);
-      localStorage.setItem('role', data.role || 'USER');
+      localStorage.setItem('role', data.role || 'CLIENTE');
+      document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
       currentUser = data.nombre;
-      saveUser(data.id, data.role || 'USER');
+      saveUser(data.id, data.role || 'CLIENTE');
       updateUserUI();
       loadFavorites();
       loadCartFromServer();
+      loadUserDataFromServer();
       closeModal($('#login-modal'));
-      showToast('¡Inicio de sesión exitoso! ✓', 'success');
+      showToast('¡Inicio de sesión exitoso!', 'success');
       e.target.reset();
       if (data.role === 'ADMIN' || data.role === 'admin') window.location.href = '/admin';
     } else {
@@ -255,6 +293,8 @@ $$('#login-form input').forEach(inp => inp.addEventListener('input', () => {
 /* ── LOGOUT ── */
 $('#logout-btn')?.addEventListener('click', () => {
   currentUser = null;
+  localStorage.removeItem('token');
+  document.cookie = "token=; path=/; max-age=0; SameSite=Strict";
   saveUser();
   wishlist = {};
   favoriteIdMap = {};
@@ -330,7 +370,7 @@ $('#register-form')?.addEventListener('submit', async e => {
       loadFavorites();
       loadCartFromServer();
       closeModal($('#register-modal'));
-      showToast('¡Cuenta creada correctamente! ✓', 'success');
+      showToast('¡Cuenta creada correctamente!', 'success');
       e.target.reset();
       strengthBar?.classList.remove('strength-weak','strength-medium','strength-strong');
     } else {
@@ -714,7 +754,7 @@ document.addEventListener('click', e => {
   e.stopPropagation();
   
   if (!currentUser || !currentUserId) {
-    showToast('Inicia sesión para guardar favoritos 🔒', 'error');
+    showToast('Inicia sesión para guardar favoritos', 'error');
     openModal('login-modal');
     return;
   }
@@ -785,14 +825,12 @@ document.addEventListener('click', e => {
   
   saveWishlist();
   const ico = btn.querySelector('i');
-  let counter = btn.querySelector('.like-count');
   if(wishlist[name]) {
     btn.classList.add('active'); ico.className = 'fas fa-heart';
-    if(!counter){ counter=document.createElement('span'); counter.className='like-count'; btn.appendChild(counter); }
-    counter.textContent='♥'; showToast('Añadido a favoritos: '+name+' ♥');
+    showToast('Añadido a favoritos: ' + name);
   } else {
     btn.classList.remove('active'); ico.className='far fa-heart';
-    if(counter) counter.remove(); showToast('Eliminado de favoritos');
+    showToast('Eliminado de favoritos');
   }
   updateFavIcon(); renderFavoritesSection();
 });
@@ -800,7 +838,7 @@ document.addEventListener('click', e => {
 document.querySelector('.icon-btn[aria-label="Favoritos"]')?.addEventListener('click', () => {
   const sec = $('#favorites-section');
   if(sec && sec.style.display !== 'none') sec.scrollIntoView({behavior:'smooth', block:'start'});
-  else showToast('Aún no tienes favoritos. ¡Marca con ♥ los que te gusten!', 'success');
+  else showToast('Aún no tienes favoritos. ¡Marca con el corazón los que te gusten!', 'success');
 });
 
 function syncWishlistHearts() {
@@ -848,7 +886,7 @@ function updateCartUI() {
 
 function addToCart(name, price, img, size='M') {
   if (!currentUser || !currentUserId) {
-    showToast('Inicia sesión para agregar productos al carrito 🔒', 'error');
+    showToast('Inicia sesión para agregar productos al carrito', 'error');
     openModal('login-modal');
     return;
   }
@@ -867,7 +905,7 @@ function addToCart(name, price, img, size='M') {
     .then(res => res.json())
     .then(data => {
       console.log('respuesta del backend:', data);
-      showToast(`"${name}" añadido al carrito ✓`);
+      showToast(`"${name}" añadido al carrito`);
       loadCartFromServer();
     })
     .catch(err => console.error('Error al añadir al carrito:', err));
@@ -1018,11 +1056,13 @@ $('#shipping-form')?.addEventListener('submit', e => {
   if (saveChk?.checked) {
 
     const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
 
     fetch(`/users/${userId}/address`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
       },
       body: JSON.stringify({
         telefono: shippingData.phone,
@@ -1051,7 +1091,7 @@ $('#shipping-form')?.addEventListener('submit', e => {
 
   openModal('checkout-modal');
 
-  showToast('Datos de envío guardados ✓', 'success');
+  showToast('Datos de envío guardados', 'success');
 
 });
 
@@ -1117,7 +1157,7 @@ $('#detail-wish-btn')?.addEventListener('click', () => {
   const name = m.dataset.productName; if(!name) return;
   
   if (!currentUser || !currentUserId) {
-    showToast('Inicia sesión para guardar favoritos 🔒', 'error');
+    showToast('Inicia sesión para guardar favoritos', 'error');
     openModal('login-modal');
     return;
   }
@@ -1191,7 +1231,7 @@ $('#detail-wish-btn')?.addEventListener('click', () => {
       b.querySelector('i').className = wishlist[name] ? 'fas fa-heart' : 'far fa-heart';
     }
   });
-  showToast(wishlist[name] ? 'Añadido a favoritos ♥' : 'Eliminado de favoritos');
+  showToast(wishlist[name] ? 'Añadido a favoritos' : 'Eliminado de favoritos');
 });
 
 $$('.size-btn').forEach(b=>b.addEventListener('click',()=>{
@@ -1313,7 +1353,7 @@ $('#pay-now-btn')?.addEventListener('click', () => {
     updateCheckoutUI();
     loadCartFromServer();
 
-    showToast('Compra realizada correctamente ✅', 'success');
+    showToast('Compra realizada correctamente', 'success');
 
     closeAll();
     ['card-name','card-number','expiry-date','cvv'].forEach(id => {
@@ -1327,12 +1367,12 @@ $('#pay-now-btn')?.addEventListener('click', () => {
   })
   .catch(err => {
     console.error('[Pagar] Error:', err);
-    showToast('Error al procesar el pago y crear la orden ❌', 'error');
+    showToast('Error al procesar el pago y crear la orden', 'error');
   });
 });
 
 /* ── CONTACTO ── */
-$('#contact-form')?.addEventListener('submit',e=>{e.preventDefault();showToast('¡Mensaje enviado! Te contactaremos pronto ✓');e.target.reset();});
+$('#contact-form')?.addEventListener('submit',e=>{e.preventDefault();showToast('¡Mensaje enviado! Te contactaremos pronto');e.target.reset();});
 
 /* ── CATEGORÍAS ── */
 $$('.cat-card').forEach(card => {
@@ -1377,9 +1417,14 @@ $$('.cat-filter-btn').forEach(btn=>btn.addEventListener('click',()=>{
 
 document.addEventListener('DOMContentLoaded', () => {
   loadUser();
+  const token = localStorage.getItem('token');
+  if (token) {
+    document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Strict`;
+  }
   loadWishlist();
   updateCartUI();
   updateUserUI();
+  loadUserDataFromServer();
   injectSearchModal();
   injectFavoritesSection();
 

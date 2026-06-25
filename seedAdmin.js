@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 async function main() {
   console.log('Iniciando seed de usuario administrador...');
   const adminEmail = 'admin'; // Compatible con el formato actual 'admin' / 'admin123'
-  const hashedPassword = await bcrypt.hash('Admin123', 10);
+  const hashedPassword = await bcrypt.hash('admin123', 10);
 
   const adminUser = await prisma.user.upsert({
     where: { email: adminEmail },
