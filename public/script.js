@@ -1152,7 +1152,6 @@ $('#shipping-form')?.addEventListener('submit', e => {
     })
     .then(res => res.json())
     .then(data => {
-      // success
     })
     .catch(err => {
       console.error('[Frontend] Error al guardar dirección en backend:', err);
@@ -1178,20 +1177,6 @@ $('#shipping-form')?.addEventListener('submit', e => {
   showToast('Datos de envío guardados', 'success');
 
 });
-
-  /* Recoger datos */
-  const shippingData = {
-    name:    document.getElementById('ship-name').value.trim(),
-    phone:   document.getElementById('ship-phone').value.trim(),
-    email:   document.getElementById('ship-email').value.trim(),
-    address: document.getElementById('ship-address').value.trim(),
-    city:    document.getElementById('ship-city').value.trim(),
-    dept:    document.getElementById('ship-dept').value,
-    notes:   document.getElementById('ship-notes').value.trim(),
-    savedAt: new Date().toISOString(),
-  };
-
-  
 
 
 
