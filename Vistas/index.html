@@ -371,37 +371,37 @@
       <div class="form-row-2">
         <div class="form-group">
           <label for="ship-name">Nombre completo <span class="required-star">*</span></label>
-          <input type="text" id="ship-name" placeholder="Nombre de quien recibe" required/>
+          <input type="text" id="ship-name" name="nombre" placeholder="Nombre de quien recibe" required/>
           <span class="field-error-msg" id="ship-name-error"></span>
         </div>
         <div class="form-group">
           <label for="ship-phone">Teléfono <span class="required-star">*</span></label>
-          <input type="tel" id="ship-phone" placeholder="+505 8888 0000" required/>
+          <input type="tel" id="ship-phone" name="telefono" placeholder="+505 8888 0000" required/>
           <span class="field-error-msg" id="ship-phone-error"></span>
         </div>
       </div>
 
       <div class="form-group">
         <label for="ship-email">Correo electrónico <span class="required-star">*</span></label>
-        <input type="email" id="ship-email" placeholder="Para confirmación del pedido" required/>
+        <input type="email" id="ship-email" name="email" placeholder="Para confirmación del pedido" required/>
         <span class="field-error-msg" id="ship-email-error"></span>
       </div>
 
       <div class="form-group">
         <label for="ship-address">Dirección <span class="required-star">*</span></label>
-        <input type="text" id="ship-address" placeholder="Calle, número, barrio o referencia" required/>
+        <input type="text" id="ship-address" name="direccion" placeholder="Calle, número, barrio o referencia" required/>
         <span class="field-error-msg" id="ship-address-error"></span>
       </div>
 
       <div class="form-row-2">
         <div class="form-group">
           <label for="ship-city">Ciudad / Municipio <span class="required-star">*</span></label>
-          <input type="text" id="ship-city" placeholder="Ej: Managua" required/>
+          <input type="text" id="ship-city" name="ciudad" placeholder="Ej: Managua" required/>
           <span class="field-error-msg" id="ship-city-error"></span>
         </div>
         <div class="form-group">
           <label for="ship-dept">Departamento</label>
-          <select id="ship-dept" class="select-styled">
+          <select id="ship-dept" name="departamento" class="select-styled">
             <option value="">Seleccionar…</option>
             <option>Managua</option><option>Granada</option><option>León</option>
             <option>Masaya</option><option>Chinandega</option><option>Rivas</option>
@@ -415,7 +415,7 @@
 
       <div class="form-group">
         <label for="ship-notes">Indicaciones adicionales</label>
-        <textarea id="ship-notes" placeholder="Ej: Portón azul, casa esquinera, llamar al llegar…" rows="2"></textarea>
+        <textarea id="ship-notes" name="notes" placeholder="Ej: Portón azul, casa esquinera, llamar al llegar…" rows="2"></textarea>
       </div>
 
       <!-- Guardar datos -->

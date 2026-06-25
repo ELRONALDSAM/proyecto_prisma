@@ -1094,35 +1094,38 @@ $('#shipping-form')?.addEventListener('submit', e => {
 
   const saveChk = document.getElementById('save-shipping-data');
 
-  if (saveChk?.checked) {
-
-    const userId = localStorage.getItem('userId');
+  if (currentUserId) {
     const token = localStorage.getItem('token');
-
-    fetch(`/users/${userId}/address`, {
+    const payload = {
+      telefono: shippingData.phone,
+      direccion: shippingData.address,
+      ciudad: shippingData.city,
+      departamento: shippingData.dept,
+      notas: shippingData.notes
+    };
+    
+    fetch(`/users/${currentUserId}/address`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
       },
-      body: JSON.stringify({
-        telefono: shippingData.phone,
-        direccion: shippingData.address,
-        ciudad: shippingData.city,
-        departamento: shippingData.dept,
-        notas: shippingData.notes
-      })
+      body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
-      console.log('Dirección guardada:', data);
+      // success
     })
     .catch(err => {
-      console.error(err);
+      console.error('[Frontend] Error al guardar dirección en backend:', err);
     });
   }
 
-  saveShippingData(shippingData);
+  if (saveChk?.checked) {
+    saveShippingData(shippingData);
+  } else {
+    clearShippingData();
+  }
 
   populateCheckoutShippingSummary(shippingData);
 
