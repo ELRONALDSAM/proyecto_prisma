@@ -1,5 +1,4 @@
 const express = require('express');
-
 const router = express.Router();
 
 const {
@@ -7,8 +6,10 @@ const {
     createCategory
 } = require('../controllers/categoryController');
 
-router.get('/', getCategories);
+const authenticateToken = require('../middlewares/auth');
+const adminMiddleware = require('../middlewares/adminMiddleware');
 
-router.post('/', createCategory);
+router.get('/', getCategories);
+router.post('/', authenticateToken, adminMiddleware, createCategory);
 
 module.exports = router;

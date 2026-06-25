@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Product" ADD COLUMN     "descripcion" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "categoria" TEXT NOT NULL DEFAULT 'mujer',
+ADD COLUMN     "precioAnterior" DOUBLE PRECISION NOT NULL DEFAULT 0,
+ADD COLUMN     "descuento" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "imagen" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "estado" TEXT NOT NULL DEFAULT 'activo';

@@ -534,8 +534,94 @@ function loadProductMap() {
         productMap[p.name.toLowerCase().trim()] = p.id;
         productIdToProduct[p.id] = p;
       });
+      renderDynamicProducts(products);
     })
     .catch(err => console.error('Error al cargar mapa de productos:', err));
+}
+
+function renderDynamicProducts(products) {
+  const activeProducts = products.filter(p => p.status === 'activo');
+
+  // Render Catalog
+  const grid = document.getElementById('products-grid');
+  if (grid) {
+    grid.innerHTML = activeProducts.map(p => `
+      <div class="product-card" data-product-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}" data-desc="${p.desc}" data-category="${p.category}">
+        <div class="product-card__img-wrap">
+          <img src="${p.img}" alt="${p.name}"/>
+          <button class="product-card__wishlist" aria-label="Favorito"><i class="far fa-heart"></i></button>
+          <button class="product-card__quick" data-action="quick-view">Vista rápida</button>
+        </div>
+        <div class="product-card__info">
+          <h3>${p.name}</h3>
+          <p class="product-card__price">${fmt(p.price)}</p>
+          <button class="btn btn-primary btn-sm btn-add-cart">Añadir al carrito</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Render Offers
+  const renderOffersGrid = (category, containerId) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const offers = activeProducts.filter(p => p.category === category && p.discount > 0);
+    container.innerHTML = offers.map(p => {
+      const badgeText = `-${p.discount}%`;
+      const originalPrice = p.precioAnterior || (p.price / (1 - p.discount / 100));
+      return `
+        <div class="offer-card" data-product-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-img="${p.img}" data-desc="${p.desc}" data-category="${p.category}">
+          <div class="offer-card__badge">${badgeText}</div>
+          <div class="offer-card__img-wrap">
+            <img src="${p.img}" alt="${p.name}"/>
+          </div>
+          <div class="offer-card__info">
+            <h4>${p.name}</h4>
+            <div class="offer-card__prices">
+              <span class="price-original">${fmt(originalPrice)}</span>
+              <span class="price-offer">${fmt(p.price)}</span>
+            </div>
+            <button class="btn btn-primary btn-sm btn-add-cart">Agregar</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  };
+
+  renderOffersGrid('mujer', 'offers-grid-mujer');
+  renderOffersGrid('hombre', 'offers-grid-hombre');
+  renderOffersGrid('nino', 'offers-grid-nino');
+
+  // Trigger heart update to ensure they match backend wishlist
+  syncWishlistHearts();
+  
+  // Re-observe scroll animations
+  initScrollAnimations();
+}
+
+function initScrollAnimations() {
+  const targets = $$('.product-card:not(.ah),.offer-card:not(.ah),.cat-card:not(.ah),.blog-card:not(.ah),.section__header:not(.ah)');
+  if (targets.length === 0) return;
+  
+  if (!window.scrollObserver) {
+    const style = document.createElement('style');
+    style.textContent = '.ah{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}.ah.av{opacity:1;transform:translateY(0)}';
+    document.head.appendChild(style);
+
+    window.scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach((en, i) => {
+        if (en.isIntersecting) {
+          setTimeout(() => en.target.classList.add('av'), i * 60);
+          window.scrollObserver.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.1 });
+  }
+  
+  targets.forEach(el => {
+    el.classList.add('ah');
+    window.scrollObserver.observe(el);
+  });
 }
 
 // Get ID by name (fuzzy matching helper)

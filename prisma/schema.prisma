@@ -25,13 +25,19 @@ cartItems Cart[]
 }
 
 model Product {
-id      Int @id @default(autoincrement())
-nombre  String
-precio  Float
-stock   Int
+  id             Int        @id @default(autoincrement())
+  nombre         String
+  descripcion    String     @default("")
+  categoria      String     @default("mujer")
+  precio         Float
+  precioAnterior Float      @default(0)
+  descuento      Int        @default(0)
+  imagen         String     @default("")
+  estado         String     @default("activo")
+  stock          Int        @default(10)
 
-favorites Favorite[]
-cartItems Cart[]
+  favorites Favorite[]
+  cartItems Cart[]
 }
 
 model Favorite {
