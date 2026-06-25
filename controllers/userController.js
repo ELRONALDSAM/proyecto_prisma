@@ -65,7 +65,27 @@ const createUser = async (req, res) => {
       password
     );
 
-    res.status(201).json(sanitizeUser(newUser));
+    const userRole = newUser.role || 'CLIENTE';
+
+    const token = jwt.sign(
+      {
+        id: newUser.id,
+        email: newUser.email,
+        role: userRole
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1h'
+      }
+    );
+
+    res.status(201).json({
+      token,
+      id: newUser.id,
+      nombre: newUser.nombre,
+      email: newUser.email,
+      role: userRole
+    });
   } catch (error) {
     console.error("ERROR CREATE USER:", error);
     res.status(500).json({

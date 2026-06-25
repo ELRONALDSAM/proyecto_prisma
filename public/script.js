@@ -417,8 +417,12 @@ $('#register-form')?.addEventListener('submit', async e => {
       clearShippingData();
       clearShippingFields();
       activeShippingData = null;
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', data.id);
+      localStorage.setItem('role', data.role || 'CLIENTE');
+      document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
       currentUser = name;
-      saveUser(data.id);
+      saveUser(data.id, data.role || 'CLIENTE');
       updateUserUI();
       loadFavorites();
       loadCartFromServer();
