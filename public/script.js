@@ -256,7 +256,7 @@ async function loadUserDataFromServer() {
       
       if (data.direccion || data.telefono || data.ciudad || data.departamento || data.notas) {
         const shippingData = {
-          name: data.nombre,
+          name: data.nombre || '',
           phone: data.telefono || '',
           email: data.email || '',
           address: data.direccion || '',
@@ -268,6 +268,9 @@ async function loadUserDataFromServer() {
         saveShippingData(shippingData);
         populateCheckoutShippingSummary(shippingData);
         prefillShippingForm();
+      } else {
+        clearShippingData();
+        clearShippingFields();
       }
     }
   } catch (err) {
@@ -333,10 +336,13 @@ $$('#login-form input').forEach(inp => inp.addEventListener('input', () => {
 
 /* ── LOGOUT ── */
 $('#logout-btn')?.addEventListener('click', () => {
+  clearShippingData();
   currentUser = null;
+  currentUserId = null;
   localStorage.removeItem('token');
   document.cookie = "token=; path=/; max-age=0; SameSite=Strict";
   saveUser();
+  clearShippingFields();
   wishlist = {};
   favoriteIdMap = {};
   saveWishlist();
@@ -405,6 +411,8 @@ $('#register-form')?.addEventListener('submit', async e => {
     });
     const data = await response.json();
     if(response.ok) {
+      clearShippingData();
+      clearShippingFields();
       currentUser = name;
       saveUser(data.id);
       updateUserUI();
@@ -987,6 +995,25 @@ document.addEventListener('click', e => {
    MODAL DATOS DE ENVÍO
 ══════════════════════════════════ */
 
+function clearShippingFields() {
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.value = val || ''; };
+  set('ship-name', '');
+  set('ship-phone', '');
+  set('ship-email', '');
+  set('ship-address', '');
+  set('ship-city', '');
+  set('ship-notes', '');
+  const dept = document.getElementById('ship-dept');
+  if (dept) dept.value = '';
+  const chk = document.getElementById('save-shipping-data');
+  if (chk) chk.checked = false;
+
+  const namePhone = $('#css-name-phone');
+  const addressLine = $('#css-address-line');
+  if (namePhone) namePhone.textContent = 'No especificado';
+  if (addressLine) addressLine.textContent = 'Completa los datos de envío';
+}
+
 /* Rellena el formulario con datos guardados y muestra/oculta el aviso */
 function prefillShippingForm() {
   const saved = loadShippingData();
@@ -1005,6 +1032,7 @@ function prefillShippingForm() {
     if (form) form.style.display = ''; // siempre visible
   } else {
     if (notice) notice.style.display = 'none';
+    clearShippingFields();
   }
 }
 
@@ -1097,6 +1125,8 @@ $('#shipping-form')?.addEventListener('submit', e => {
   if (currentUserId) {
     const token = localStorage.getItem('token');
     const payload = {
+      nombre: shippingData.name,
+      email: shippingData.email,
       telefono: shippingData.phone,
       direccion: shippingData.address,
       ciudad: shippingData.city,

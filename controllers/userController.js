@@ -161,6 +161,8 @@ const updateAddress = async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     const {
+      nombre,
+      email,
       telefono,
       direccion,
       ciudad,
@@ -168,9 +170,13 @@ const updateAddress = async (req, res) => {
       notas
     } = req.body;
 
+    console.log('[updateAddress] Datos recibidos para guardar dirección:', req.body);
+
     const updatedUser = await userService.updateUser(
       userId,
       {
+        nombre,
+        email,
         telefono,
         direccion,
         ciudad,
@@ -179,9 +185,11 @@ const updateAddress = async (req, res) => {
       }
     );
 
+    console.log('[updateAddress] Usuario actualizado en DB:', updatedUser);
+
     res.json(sanitizeUser(updatedUser));
   } catch (error) {
-    console.error(error);
+    console.error('[updateAddress] Error al actualizar dirección:', error);
     res.status(500).json({
       error: error.message
     });
