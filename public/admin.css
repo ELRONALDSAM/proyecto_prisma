@@ -52,3 +52,25 @@ tbody tr:hover{background:rgba(255,255,255,.03)}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
   .hamburger-admin{display:flex!important}
 }
+
+/* Badge Styles */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--rad-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.badge-mujer { background: rgba(255, 92, 58, 0.1); color: var(--crl); border: 1px solid rgba(255, 92, 58, 0.2); }
+.badge-hombre { background: rgba(126, 181, 160, 0.1); color: var(--sg); border: 1px solid rgba(126, 181, 160, 0.2); }
+.badge-nino { background: rgba(245, 166, 35, 0.1); color: #f5a623; border: 1px solid rgba(245, 166, 35, 0.2); }
+.badge-accesorios { background: rgba(232, 217, 181, 0.1); color: var(--chm); border: 1px solid rgba(232, 217, 181, 0.2); }
+.badge-activo { background: rgba(126, 181, 160, 0.15); color: var(--sg); border: 1px solid rgba(126, 181, 160, 0.3); }
+.badge-inactivo { background: rgba(138, 139, 154, 0.15); color: var(--mtd); border: 1px solid rgba(138, 139, 154, 0.3); }
+.badge-discount { background: rgba(255, 92, 58, 0.2); color: var(--crl); font-weight: 700; }
+.badge-admin { background: rgba(255, 92, 58, 0.15); color: var(--crl); border: 1px solid rgba(255, 92, 58, 0.3); }
+.badge-user { background: rgba(138, 139, 154, 0.15); color: var(--mtd); border: 1px solid rgba(138, 139, 154, 0.3); }

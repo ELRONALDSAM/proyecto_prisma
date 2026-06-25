@@ -25,21 +25,15 @@
     <span class="logo-text">PRISMA</span> <i class="fas fa-gem logo-gem"></i> <span class="admin-tag">Admin</span>
   </div>
   <nav class="sidebar__nav">
-    <p class="nav-section-label">Principal</p>
-    <div class="nav-item active" data-page="dashboard" role="button" tabindex="0"><i class="fas fa-chart-pie"></i> Dashboard</div>
-    <div class="nav-item" data-page="productos" role="button" tabindex="0"><i class="fas fa-tshirt"></i> Productos <span class="badge-count" id="total-badge">0</span></div>
+    <div class="nav-item active" data-page="productos" role="button" tabindex="0"><i class="fas fa-tshirt"></i> Productos <span class="badge-count" id="total-badge">0</span></div>
     <div class="nav-item" data-page="categorias" role="button" tabindex="0"><i class="fas fa-tags"></i> Categorías</div>
-    
-    <p class="nav-section-label">Tienda</p>
-    <div class="nav-item" data-page="ofertas" role="button" tabindex="0"><i class="fas fa-percentage"></i> Ofertas</div>
-    <div class="nav-item" data-page="inventario" role="button" tabindex="0"><i class="fas fa-boxes"></i> Inventario</div>
-    
-    <p class="nav-section-label">Sistema</p>
+    <div class="nav-item" data-page="usuarios" role="button" tabindex="0"><i class="fas fa-users"></i> Usuarios</div>
     <div class="nav-item" id="btn-go-home" role="button" tabindex="0"><i class="fas fa-store"></i> Ver Tienda</div>
+    <div class="nav-item" id="btn-logout-sidebar" role="button" tabindex="0"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</div>
   </nav>
   <div class="sidebar__footer">
-    <strong>Administrador</strong> Prisma · Managua, NI<br/>
-    <button class="btn-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+    <strong>Administrador</strong> Prisma<br/>
+    Managua, NI
   </div>
 </aside>
 
@@ -49,7 +43,7 @@
   <header class="topbar">
     <div class="topbar__left">
       <button class="hamburger-admin" id="hamburger-admin"><i class="fas fa-bars"></i></button>
-      <h1 class="topbar__title" id="page-title">Dashboard</h1>
+      <h1 class="topbar__title" id="page-title">Productos</h1>
     </div>
     <div class="topbar__actions">
       <button class="btn-ghost" id="btn-new-product"><i class="fas fa-plus"></i> Nuevo producto</button>
@@ -57,21 +51,7 @@
   </header>
 
   <main class="content" id="content">
-    <section class="page active" id="page-dashboard">
-      <div class="stats-grid" id="stats-grid"></div>
-      <div class="recent-grid">
-        <div class="panel">
-          <div class="panel__header"><h4><i class="fas fa-tshirt" style="margin-right:8px;color:var(--coral)"></i>Últimos productos</h4><a href="#" onclick="navTo('productos');return false;">Ver todos</a></div>
-          <div id="recent-products-list"></div>
-        </div>
-        <div class="panel">
-          <div class="panel__header"><h4><i class="fas fa-history" style="margin-right:8px;color:var(--sage)"></i>Actividad reciente</h4></div>
-          <div id="activity-log"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="page" id="page-productos">
+    <section class="page active" id="page-productos">
       <div class="table-wrap">
         <div class="table-toolbar">
           <div class="table-toolbar__left">
@@ -83,7 +63,7 @@
         </div>
         <div class="table-overflow">
           <table id="products-table">
-            <thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Descuento</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <thead><tr><th>Imagen</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead>
             <tbody id="products-tbody"></tbody>
           </table>
         </div>
@@ -102,25 +82,22 @@
       </div>
     </section>
 
-    <section class="page" id="page-ofertas">
+    <section class="page" id="page-usuarios">
       <div class="table-wrap">
-        <div class="table-toolbar"><h2 class="table-toolbar__title">Productos con descuento activo</h2><button class="btn-primary" onclick="openModal('add')"><i class="fas fa-plus"></i> Agregar oferta</button></div>
-        <div class="table-overflow">
-          <table>
-            <thead><tr><th>Producto</th><th>Precio original</th><th>Descuento</th><th>Precio final</th><th>Acciones</th></tr></thead>
-            <tbody id="offers-tbody"></tbody>
-          </table>
+        <div class="table-toolbar">
+          <h2 class="table-toolbar__title">Usuarios Registrados</h2>
         </div>
-      </div>
-    </section>
-
-    <section class="page" id="page-inventario">
-      <div class="table-wrap">
-        <div class="table-toolbar"><h2 class="table-toolbar__title">Estado del inventario</h2></div>
         <div class="table-overflow">
           <table>
-            <thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock (estimado)</th><th>Estado</th></tr></thead>
-            <tbody id="inv-tbody"></tbody>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
           </table>
         </div>
       </div>
