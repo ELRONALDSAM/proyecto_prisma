@@ -1299,7 +1299,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const accountDropdown = document.getElementById('account-dropdown');
 
   const toggleAccountDropdown = (e) => {
-    if (window.innerWidth < 991) {
+    if (window.innerWidth < 992) {
       e.preventDefault();
       e.stopPropagation();
       if (accountDropdown) {
@@ -1314,7 +1314,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginModal = document.getElementById('login-modal');
   if (loginTrigger) {
     loginTrigger.addEventListener('click', (e) => {
-      if (window.innerWidth < 991) {
+      if (window.innerWidth < 992) {
         toggleAccountDropdown(e);
       } else {
         e.preventDefault();
@@ -1327,7 +1327,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const userGreeting = document.getElementById('user-greeting');
   if (userGreeting) {
     userGreeting.addEventListener('click', (e) => {
-      if (window.innerWidth < 991) {
+      if (window.innerWidth < 992) {
         if (e.target.closest('#logout-btn')) return;
         toggleAccountDropdown(e);
       }
