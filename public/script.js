@@ -1357,9 +1357,12 @@ $('#pay-now-btn')?.addEventListener('click', () => {
   const sub = cart.reduce((s,i)=>s+i.price*i.qty, 0);
   const total = sub + 80;
 
+  const shippingData = loadShippingData() || {};
+
   console.log('=== CREANDO ORDEN ===');
   console.log('userId:', currentUserId);
   console.log('total:', total);
+  console.log('shippingData:', shippingData);
 
   fetch('/orders', {
     method: 'POST',
@@ -1368,7 +1371,12 @@ $('#pay-now-btn')?.addEventListener('click', () => {
     },
     body: JSON.stringify({
       userId: currentUserId,
-      total: total
+      total: total,
+      telefono: shippingData.phone || null,
+      direccion: shippingData.address || null,
+      ciudad: shippingData.city || null,
+      departamento: shippingData.dept || null,
+      notas: shippingData.notes || null
     })
   })
   .then(res => {
@@ -1625,11 +1633,22 @@ async function loadOrdersHistory() {
     let html = '<div class="orders-history-list">';
     myOrders.forEach(order => {
       html += `
-        <div class="order-history-item">
-          <div class="order-info">
+        <div class="order-history-item" style="border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.02);">
+          <div class="order-info" style="display: flex; justify-content: space-between; font-weight: bold;">
             <span class="order-id"><i class="fas fa-receipt"></i> Pedido #${order.id}</span>
             <span class="order-total">${fmt(order.total)}</span>
           </div>
+          ${(order.telefono || order.direccion || order.ciudad) ? `
+            <div class="order-shipping-details" style="font-size: 0.85rem; color: #8a8b9a; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 8px;">
+              <div><strong>Dirección:</strong> ${esc(order.direccion || 'No especificada')}, ${esc(order.ciudad || '')}${order.departamento ? ', ' + esc(order.departamento) : ''}</div>
+              <div><strong>Teléfono:</strong> ${esc(order.telefono || 'No especificado')}</div>
+              ${order.notas ? `<div><strong>Notas:</strong> ${esc(order.notas)}</div>` : ''}
+            </div>
+          ` : `
+            <div class="order-shipping-details" style="font-size: 0.85rem; color: #ff5c3a; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 8px;">
+              <i class="fas fa-exclamation-triangle"></i> Datos de envío no registrados (NULL)
+            </div>
+          `}
         </div>
       `;
     });

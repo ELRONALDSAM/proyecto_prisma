@@ -1,4 +1,5 @@
 const prisma = require('../lib/prisma');
+const orderService = require('../services/orderServices');
 
 const getOrders = async (req, res) => {
   try {
@@ -14,21 +15,27 @@ const getOrders = async (req, res) => {
 
 const createOrder = async (req, res) => {
   try {
-    console.log('[createOrder] datos recibidos:', req.body);
-    const { userId, total } = req.body;
+    console.log('[createOrder] datos recibidos en req.body:', req.body);
+    const { userId, total, telefono, direccion, ciudad, departamento, notas } = req.body;
 
     if (!userId || total === undefined) {
       return res.status(400).json({ error: 'userId y total son requeridos' });
     }
 
-    const newOrder = await prisma.order.create({
-      data: {
-        userId: parseInt(userId),
-        total: parseFloat(total)
-      }
-    });
+    const orderData = {
+      userId,
+      total,
+      telefono,
+      direccion,
+      ciudad,
+      departamento,
+      notas
+    };
 
-    console.log('[createOrder] orden creada:', newOrder);
+    console.log('[createOrder] enviando datos al servicio:', orderData);
+    const newOrder = await orderService.createOrder(orderData);
+
+    console.log('[createOrder] orden creada con éxito:', newOrder);
 
     // Vaciar el carrito
     await prisma.cart.deleteMany({
