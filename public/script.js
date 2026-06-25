@@ -1,6 +1,6 @@
 'use strict';
 
-let cart = [], currentUser = null, currentUserId = null, currentUserRole = null, wishlist = {};
+let cart = [], currentUser = null, currentUserId = null, currentUserRole = null, wishlist = {}, activeShippingData = null;
 let favoriteIdMap = {};
 let productIdToProduct = {};
 
@@ -266,11 +266,13 @@ async function loadUserDataFromServer() {
           savedAt: new Date().toISOString()
         };
         saveShippingData(shippingData);
+        activeShippingData = shippingData;
         populateCheckoutShippingSummary(shippingData);
         prefillShippingForm();
       } else {
         clearShippingData();
         clearShippingFields();
+        activeShippingData = null;
       }
     }
   } catch (err) {
@@ -337,6 +339,7 @@ $$('#login-form input').forEach(inp => inp.addEventListener('input', () => {
 /* ── LOGOUT ── */
 $('#logout-btn')?.addEventListener('click', () => {
   clearShippingData();
+  activeShippingData = null;
   currentUser = null;
   currentUserId = null;
   localStorage.removeItem('token');
@@ -413,6 +416,7 @@ $('#register-form')?.addEventListener('submit', async e => {
     if(response.ok) {
       clearShippingData();
       clearShippingFields();
+      activeShippingData = null;
       currentUser = name;
       saveUser(data.id);
       updateUserUI();
@@ -1016,7 +1020,7 @@ function clearShippingFields() {
 
 /* Rellena el formulario con datos guardados y muestra/oculta el aviso */
 function prefillShippingForm() {
-  const saved = loadShippingData();
+  const saved = activeShippingData || loadShippingData();
   const notice = $('#saved-address-notice');
   const preview = $('#saved-address-preview');
   const form = $('#shipping-form');
@@ -1150,6 +1154,8 @@ $('#shipping-form')?.addEventListener('submit', e => {
       console.error('[Frontend] Error al guardar dirección en backend:', err);
     });
   }
+
+  activeShippingData = shippingData;
 
   if (saveChk?.checked) {
     saveShippingData(shippingData);
@@ -1387,7 +1393,7 @@ $('#pay-now-btn')?.addEventListener('click', () => {
   const sub = cart.reduce((s,i)=>s+i.price*i.qty, 0);
   const total = sub + 80;
 
-  const shippingData = loadShippingData() || {};
+  const shippingData = activeShippingData || loadShippingData() || {};
 
   console.log('=== CREANDO ORDEN ===');
   console.log('userId:', currentUserId);
@@ -1417,7 +1423,7 @@ $('#pay-now-btn')?.addEventListener('click', () => {
     console.log('[createOrder] Respuesta recibida del backend:', newOrder);
 
     /* Datos de envío guardados */
-    const shippingData = loadShippingData();
+    const shippingData = activeShippingData || loadShippingData();
 
     /* Mostrar modal de éxito */
     const addrBox = $('#order-success-address');
@@ -1520,7 +1526,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* Rellenar shipping si ya hay datos */
   const saved = loadShippingData();
-  if (saved) populateCheckoutShippingSummary(saved);
+  if (saved) {
+    activeShippingData = saved;
+    populateCheckoutShippingSummary(saved);
+  }
 
   // Lógica del dropdown de cuenta en móviles
   const accountDropdown = document.getElementById('account-dropdown');
