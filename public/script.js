@@ -175,11 +175,52 @@ function updateUserUI() {
   if(userGreeting)  userGreeting.style.display = show ? 'flex' : 'none';
   if(show && $('#user-name-display')) $('#user-name-display').textContent = '¡Hola, '+currentUser+'!';
 
-  const isAdmin = currentUserRole === 'ADMIN';
-  const adminLinkDesktop = $('#admin-link-desktop');
-  const adminLinkMobile = $('#nav-admin-link');
-  if (adminLinkDesktop) adminLinkDesktop.style.display = (show && isAdmin) ? 'inline-block' : 'none';
-  if (adminLinkMobile) adminLinkMobile.style.display = (show && isAdmin) ? 'block' : 'none';
+  const isAdmin = show && currentUserRole === 'ADMIN';
+
+  // Desktop Link
+  let adminLinkDesktop = $('#admin-link-desktop');
+  if (isAdmin) {
+    if (!adminLinkDesktop) {
+      adminLinkDesktop = document.createElement('a');
+      adminLinkDesktop.id = 'admin-link-desktop';
+      adminLinkDesktop.href = '/admin';
+      adminLinkDesktop.style.color = '#F4C542';
+      adminLinkDesktop.style.fontWeight = '600';
+      adminLinkDesktop.style.textDecoration = 'underline';
+      adminLinkDesktop.style.margin = '0 10px';
+      adminLinkDesktop.textContent = 'Panel Admin';
+      const userDisplay = $('#user-name-display');
+      if (userDisplay) {
+        userDisplay.insertAdjacentElement('afterend', adminLinkDesktop);
+      }
+    }
+  } else {
+    if (adminLinkDesktop) {
+      adminLinkDesktop.remove();
+    }
+  }
+
+  // Mobile Link
+  let adminLinkMobile = $('#nav-admin-link');
+  if (isAdmin) {
+    if (!adminLinkMobile) {
+      adminLinkMobile = document.createElement('a');
+      adminLinkMobile.id = 'nav-admin-link';
+      adminLinkMobile.href = '/admin';
+      adminLinkMobile.className = 'nav-account-item';
+      adminLinkMobile.style.color = '#F4C542';
+      adminLinkMobile.style.fontWeight = '600';
+      adminLinkMobile.innerHTML = '<i class="fas fa-user-shield"></i> Panel Admin';
+      const navGreeting = $('.nav-account-greeting');
+      if (navGreeting) {
+        navGreeting.insertAdjacentElement('afterend', adminLinkMobile);
+      }
+    }
+  } else {
+    if (adminLinkMobile) {
+      adminLinkMobile.remove();
+    }
+  }
 
   // Sincronización con el dropdown de cuenta
   const dropdownGuestMenu = $('#dropdown-guest-menu');
