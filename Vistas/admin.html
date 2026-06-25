@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Administrador - Prisma</title>
+  <script>
+    (function() {
+      const token = localStorage.getItem('token');
+      const role = localStorage.getItem('role');
+      if (!token || (role !== 'ADMIN' && role !== 'admin')) {
+        window.location.replace('/');
+      }
+    })();
+  </script>
 
   <style>
     body{

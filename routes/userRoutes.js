@@ -13,10 +13,12 @@ const {
 } = require('../controllers/userController');
 
 const validateUser = require('../validators/userValidator');
+const authenticateToken = require('../middlewares/auth');
+const adminMiddleware = require('../middlewares/adminMiddleware');
 
-router.get('/', getUsers);
+router.get('/', authenticateToken, adminMiddleware, getUsers);
 
-router.get('/:id', getUserById);
+router.get('/:id', authenticateToken, getUserById);
 
 router.post('/', (req, res) => {
 
@@ -32,7 +34,7 @@ router.post('/', (req, res) => {
 
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', authenticateToken, (req, res) => {
 
     const { error } = validateUser(req.body);
 
@@ -48,8 +50,8 @@ router.put('/:id', (req, res) => {
 
 router.post('/login', loginUser);
 
-router.put('/:id/address', updateAddress);
+router.put('/:id/address', authenticateToken, updateAddress);
 
-router.delete('/:id', deleteUser);
+router.delete('/:id', authenticateToken, adminMiddleware, deleteUser);
 
 module.exports = router;

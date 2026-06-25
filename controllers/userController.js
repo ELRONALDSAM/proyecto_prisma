@@ -129,11 +129,13 @@ const loginUser = async (req, res) => {
       });
     }
 
+    const userRole = user.role || 'USER';
+
     const token = jwt.sign(
       {
         id: user.id,
         email: user.email,
-        role: user.role
+        role: userRole
       },
       process.env.JWT_SECRET,
       {
@@ -145,7 +147,7 @@ const loginUser = async (req, res) => {
       token,
       id: user.id,
       nombre: user.nombre,
-      role: user.role
+      role: userRole
     });
   } catch (error) {
     console.error(error);

@@ -13,8 +13,8 @@ const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;'
 const showToast = (m, t = 'ok') => { const d = el('admin-toast'); d.textContent = m; d.className = `show ${t}`; clearTimeout(d._t); d._t = setTimeout(() => d.className = '', 3200); };
 
 async function apiLoadProducts() { try { const r = await fetch(`${CONFIG.apiBase}/products`); if (!r.ok) throw 1; const d = await r.json(); state.products = d; state.nextId = Math.max(...d.map(p => p.id), 0) + 1; } catch { state.products = SEED_PRODUCTS; state.nextId = SEED_PRODUCTS.length + 1; state.activityLog = SEED_LOG; } }
-async function apiSaveProduct(p, id = null) { try { const m = id ? 'PUT' : 'POST', u = id ? `${CONFIG.apiBase}/products/${id}` : `${CONFIG.apiBase}/products`; const r = await fetch(u, { method: m, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }); return r.ok ? await r.json() : null; } catch { return null; } }
-async function apiDeleteProduct(id) { try { return (await fetch(`${CONFIG.apiBase}/products/${id}`, { method: 'DELETE' })).ok; } catch { return false; } }
+async function apiSaveProduct(p, id = null) { try { const token = localStorage.getItem('token'); const m = id ? 'PUT' : 'POST', u = id ? `${CONFIG.apiBase}/products/${id}` : `${CONFIG.apiBase}/products`; const r = await fetch(u, { method: m, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(p) }); return r.ok ? await r.json() : null; } catch { return null; } }
+async function apiDeleteProduct(id) { try { const token = localStorage.getItem('token'); return (await fetch(`${CONFIG.apiBase}/products/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } })).ok; } catch { return false; } }
 
 const renderPage = p => ({ dashboard: renderDashboard, productos: renderProducts, categorias: renderCategorias, ofertas: renderOfertas, inventario: renderInventario })[p]?.();
 

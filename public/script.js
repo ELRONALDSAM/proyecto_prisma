@@ -1,6 +1,6 @@
 'use strict';
 
-let cart = [], currentUser = null, currentUserId = null, wishlist = {};
+let cart = [], currentUser = null, currentUserId = null, currentUserRole = null, wishlist = {};
 let favoriteIdMap = {};
 let productIdToProduct = {};
 
@@ -33,7 +33,7 @@ function saveWishlist() {
 function loadWishlist() {
   try { const d = localStorage.getItem('prisma_wishlist'); if(d) wishlist = JSON.parse(d); } catch(e) {}
 }
-function saveUser(userId) {
+function saveUser(userId, role) {
   try { 
     if(currentUser) {
       localStorage.setItem('prisma_user', currentUser);
@@ -41,10 +41,16 @@ function saveUser(userId) {
         localStorage.setItem('userId', userId);
         currentUserId = parseInt(userId);
       }
+      if (role) {
+        localStorage.setItem('role', role);
+        currentUserRole = role;
+      }
     } else {
       localStorage.removeItem('prisma_user');
       localStorage.removeItem('userId');
+      localStorage.removeItem('role');
       currentUserId = null;
+      currentUserRole = null;
     }
   } catch(e) {}
 }
@@ -52,6 +58,7 @@ function loadUser() {
   try { 
     currentUser = localStorage.getItem('prisma_user') || null; 
     currentUserId = parseInt(localStorage.getItem('userId')) || null;
+    currentUserRole = localStorage.getItem('role') || null;
   } catch(e) {}
 }
 
@@ -168,6 +175,12 @@ function updateUserUI() {
   if(userGreeting)  userGreeting.style.display = show ? 'flex' : 'none';
   if(show && $('#user-name-display')) $('#user-name-display').textContent = '¡Hola, '+currentUser+'!';
 
+  const isAdmin = currentUserRole === 'ADMIN';
+  const adminLinkDesktop = $('#admin-link-desktop');
+  const adminLinkMobile = $('#nav-admin-link');
+  if (adminLinkDesktop) adminLinkDesktop.style.display = (show && isAdmin) ? 'inline-block' : 'none';
+  if (adminLinkMobile) adminLinkMobile.style.display = (show && isAdmin) ? 'block' : 'none';
+
   // Sincronización con el dropdown de cuenta
   const dropdownGuestMenu = $('#dropdown-guest-menu');
   const dropdownUserMenu = $('#dropdown-user-menu');
@@ -214,15 +227,16 @@ $('#login-form')?.addEventListener('submit', async e => {
     if (response.ok) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.id);
+      localStorage.setItem('role', data.role || 'USER');
       currentUser = data.nombre;
-      saveUser(data.id);
+      saveUser(data.id, data.role || 'USER');
       updateUserUI();
       loadFavorites();
       loadCartFromServer();
       closeModal($('#login-modal'));
       showToast('¡Inicio de sesión exitoso! ✓', 'success');
       e.target.reset();
-      if (data.role === 'admin') window.location.href = '/admin';
+      if (data.role === 'ADMIN' || data.role === 'admin') window.location.href = '/admin';
     } else {
       showFormMsg('login-form', data.error || 'Email o contraseña incorrectos', 'error');
     }
