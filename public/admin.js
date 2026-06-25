@@ -98,48 +98,37 @@ function renderProducts() {
     el('table-info').textContent = `${f.length} producto${f.length !== 1 ? 's' : ''}`;
   }
   
-  const tbody = el('products-tbody');
-  if (tbody) {
-    tbody.innerHTML = sl.length ? sl.map(p => `
-      <tr>
-        <td>
-          <div class="product-thumb">
-            <img src="${esc(p.img)}" loading="lazy" onerror="this.style.display='none'"/>
+  const grid = el('products-grid');
+  if (grid) {
+    grid.innerHTML = sl.length ? sl.map(p => `
+      <div class="product-card">
+        <div class="product-card__img-wrap">
+          <img src="${esc(p.img)}" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a1b24/e8d9b5?text=Sin+Imagen'"/>
+        </div>
+        <div class="product-card__content">
+          <div class="product-card__header">
+            <span class="badge badge-${esc(p.category)}">${esc(CAT_LABEL[p.category] || p.category)}</span>
+            <span class="badge badge-${p.status}">${p.status === 'activo' ? 'Activo' : 'Inactivo'}</span>
           </div>
-        </td>
-        <td>
-          <strong>${esc(p.name)}</strong>
-          <span class="badge badge-${p.status}">${p.status === 'activo' ? 'Activo' : 'Inactivo'}</span>
-          <br/>
-          <span class="sub-text">${esc(p.desc.slice(0, 50))}…</span>
-        </td>
-        <td>
-          <span class="badge badge-${esc(p.category)}">${esc(CAT_LABEL[p.category] || p.category)}</span>
-        </td>
-        <td class="price-cell">
-          ${fmt(p.price)}
-          ${p.discount > 0 ? `<br/><span class="badge badge-discount">-${p.discount}%</span>` : ''}
-        </td>
-        <td>
-          <strong>${p.stock !== undefined ? p.stock : 10}</strong> unid.
-        </td>
-        <td>
-          <div class="actions-cell">
-            <button class="icon-action view" data-action="view" data-id="${p.id}"><i class="fas fa-eye"></i></button>
-            <button class="icon-action edit" data-action="edit" data-id="${p.id}"><i class="fas fa-edit"></i></button>
-            <button class="icon-action delete" data-action="delete" data-id="${p.id}"><i class="fas fa-trash-alt"></i></button>
+          <h3 class="product-card__title">${esc(p.name)}</h3>
+          <p class="product-card__desc">${esc(p.desc.slice(0, 80))}${p.desc.length > 80 ? '…' : ''}</p>
+          <div class="product-card__price-row">
+            <span class="product-card__price">${fmt(p.price)}</span>
+            ${p.discount > 0 ? `<span class="badge badge-discount">-${p.discount}%</span>` : ''}
           </div>
-        </td>
-      </tr>
+        </div>
+        <div class="product-card__actions">
+          <button class="btn-action edit" data-action="edit" data-id="${p.id}"><i class="fas fa-edit"></i> Editar</button>
+          <button class="btn-action delete" data-action="delete" data-id="${p.id}"><i class="fas fa-trash-alt"></i> Eliminar</button>
+        </div>
+      </div>
     `).join('') : `
-      <tr>
-        <td colspan="6">
-          <div class="empty-state">
-            <i class="fas fa-search"></i>
-            <p>No se encontraron productos.</p>
-          </div>
-        </td>
-      </tr>
+      <div class="empty-state-grid">
+        <div class="empty-state">
+          <i class="fas fa-search"></i>
+          <p>No se encontraron productos.</p>
+        </div>
+      </div>
     `;
   }
   
